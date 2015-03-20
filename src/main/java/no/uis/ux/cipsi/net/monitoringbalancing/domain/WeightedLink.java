@@ -1,6 +1,8 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.domain;
 
-public class WeightedLink {
+import java.io.Serializable;
+
+public class WeightedLink implements Serializable{
 
     String id;
     double speed;  // bps
