@@ -11,6 +11,7 @@
       <!--<inputSolutionFile>data/cloudbalancing/unsolved/2computers-6processes.xml</inputSolutionFile>-->
       <!--<inputSolutionFile>data/cloudbalancing/unsolved/3computers-9processes.xml</inputSolutionFile>-->
       <inputSolutionFile>data/monitoringbalancing/unsolved/input.txt</inputSolutionFile>
+      <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
       <problemStatisticType>BEST_SCORE</problemStatisticType>
       <!--<problemStatisticType>STEP_SCORE</problemStatisticType>-->
       <!--<problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>-->
