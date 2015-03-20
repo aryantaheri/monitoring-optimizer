@@ -1,6 +1,10 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.domain;
 
-public abstract class Node {
+import java.io.Serializable;
+
+public abstract class Node implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     protected String id;
 

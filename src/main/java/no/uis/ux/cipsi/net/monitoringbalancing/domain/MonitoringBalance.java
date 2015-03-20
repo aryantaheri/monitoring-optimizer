@@ -1,5 +1,6 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.domain;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,7 +17,9 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 
 @PlanningSolution
 @XStreamAlias("MonitoringBalance")
-public class MonitoringBalance implements Solution<HardSoftBigDecimalScore> {
+public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     List<Switch> monitoringSwitches;
     List<MonitoringHost> monitoringHosts;
