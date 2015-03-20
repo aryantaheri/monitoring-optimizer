@@ -1,5 +1,6 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.domain;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -16,7 +17,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @PlanningEntity(difficultyComparatorClass = TrafficFlowDifficultyComparator.class)
 @XStreamAlias("TrafficFlow")
-public class TrafficFlow {
+public class TrafficFlow implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     private Node srcNode;
     private Node dstNode;
