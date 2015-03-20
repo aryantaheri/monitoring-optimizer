@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark>
+  <benchmarkDirectory>local/data/monitoringbalancing</benchmarkDirectory>
+  <parallelBenchmarkCount>AUTO</parallelBenchmarkCount>
+  <warmUpSecondsSpentLimit>30</warmUpSecondsSpentLimit>
+
+  <inheritedSolverBenchmark>
+    <problemBenchmarks>
+      <!-- <xStreamAnnotatedClass>no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance</xStreamAnnotatedClass>  -->
+      <solutionFileIOClass>no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalanceFileIO</solutionFileIOClass>
+      <!--<inputSolutionFile>data/cloudbalancing/unsolved/2computers-6processes.xml</inputSolutionFile>-->
+      <!--<inputSolutionFile>data/cloudbalancing/unsolved/3computers-9processes.xml</inputSolutionFile>-->
+      <inputSolutionFile>data/monitoringbalancing/unsolved/input.txt</inputSolutionFile>
+      <problemStatisticType>BEST_SCORE</problemStatisticType>
+      <!--<problemStatisticType>STEP_SCORE</problemStatisticType>-->
+      <!--<problemStatisticType>CALCULATE_COUNT_PER_SECOND</problemStatisticType>-->
+      <!--<problemStatisticType>BEST_SOLUTION_MUTATION</problemStatisticType>-->
+      <!--<problemStatisticType>MOVE_COUNT_PER_STEP</problemStatisticType>-->
+      <!--<problemStatisticType>MEMORY_USE</problemStatisticType>-->
+      <!--<singleStatisticType>CONSTRAINT_MATCH_TOTAL_BEST_SCORE</singleStatisticType>-->
+      <!--<singleStatisticType>CONSTRAINT_MATCH_TOTAL_STEP_SCORE</singleStatisticType>-->
+      <!--<singleStatisticType>PICKED_MOVE_TYPE_BEST_SCORE_DIFF</singleStatisticType>-->
+      <!--<singleStatisticType>PICKED_MOVE_TYPE_STEP_SCORE_DIFF</singleStatisticType>-->
+    </problemBenchmarks>
+
+    <solver>
+      <solutionClass>no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance</solutionClass>
+      <entityClass>no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow</entityClass>
+      <scoreDirectorFactory>
+        <scoreDefinitionType>HARD_SOFT</scoreDefinitionType>
+        <easyScoreCalculatorClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.score.MonitoringBalancingEasyScoreCalculator</easyScoreCalculatorClass>
+        <!-- <scoreDrl>monitoringbalancing/solver/cloudBalancingScoreRules.drl</scoreDrl>  -->
+        <initializingScoreTrend>ONLY_DOWN/ONLY_DOWN</initializingScoreTrend>
+      </scoreDirectorFactory>
+      <termination>
+        <minutesSpentLimit>5</minutesSpentLimit>
+      </termination>
+
+      <constructionHeuristic>
+	    <queuedEntityPlacer>
+	      <entitySelector id="placerEntitySelector">
+	      <cacheType>PHASE</cacheType> 
+	      </entitySelector>
+	      <cartesianProductMoveSelector>
+	        <changeMoveSelector>
+	          <entitySelector mimicSelectorRef="placerEntitySelector"/>
+	          <valueSelector>
+	            <variableName>monitoringSwitch</variableName>
+	          </valueSelector>
+	        </changeMoveSelector>
+	        <changeMoveSelector>
+	          <entitySelector mimicSelectorRef="placerEntitySelector"/>
+	          <valueSelector>
+	            <variableName>monitoringHost</variableName>
+	          </valueSelector>
+	        </changeMoveSelector>
+	      </cartesianProductMoveSelector>
+	    </queuedEntityPlacer>
+	  </constructionHeuristic> 
+
+    </solver>
+  </inheritedSolverBenchmark>
+
+  <!--<solverBenchmark>-->
+    <!--<name>BRANCH_AND_BOUND</name>-->
+    <!--<solver>-->
+      <!--<exhaustiveSearch>-->
+        <!--<exhaustiveSearchType>BRANCH_AND_BOUND</exhaustiveSearchType>-->
+      <!--</exhaustiveSearch>-->
+    <!--</solver>-->
+  <!--</solverBenchmark>-->
+
+<!-- 
+  <solverBenchmark>
+    <name>First Fit</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+  <solverBenchmark>
+    <name>First Fit Decreasing</name>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+    </solver>
+  </solverBenchmark>
+ -->
+
+  <solverBenchmark>
+    <name>Tabu Search</name>
+    <solver>
+<!-- 
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+ -->
+      <localSearch>
+        <unionMoveSelector>
+			<!-- 
+          <changeMoveSelector/>
+          <swapMoveSelector/>
+          <pillarChangeMoveSelector/>
+          <pillarSwapMoveSelector/>
+			 -->
+          <moveListFactory>
+	    	<moveListFactoryClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.move.factory.MonitoringChangeMoveFactory</moveListFactoryClass>
+	      </moveListFactory>  
+        </unionMoveSelector>
+        <acceptor>
+          <entityTabuSize>7</entityTabuSize>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>1000</acceptedCountLimit>
+        </forager>
+      </localSearch>
+    </solver>
+  </solverBenchmark>
+  <solverBenchmark>
+    <name>Simulated Annealing</name>
+    <solver>
+<!-- 
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+ -->
+      <localSearch>
+        <unionMoveSelector>
+			<!-- 
+          <changeMoveSelector/>
+          <swapMoveSelector/>
+          <pillarChangeMoveSelector/>
+          <pillarSwapMoveSelector/>
+			 -->
+          <moveListFactory>
+	    	<moveListFactoryClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.move.factory.MonitoringChangeMoveFactory</moveListFactoryClass>
+	      </moveListFactory>
+        </unionMoveSelector>
+        <acceptor>
+          <simulatedAnnealingStartingTemperature>0hard/400soft</simulatedAnnealingStartingTemperature>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>4</acceptedCountLimit>
+        </forager>
+      </localSearch>
+    </solver>
+  </solverBenchmark>
+  <solverBenchmark>
+    <name>Late Acceptance</name>
+    <solver>
+<!-- 
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+ -->
+      <localSearch>
+        <unionMoveSelector>
+          <!-- 
+          <changeMoveSelector/>
+          <swapMoveSelector/>
+          <pillarChangeMoveSelector/>
+          <pillarSwapMoveSelector/>
+           -->
+          <moveListFactory>
+	    	<moveListFactoryClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.move.factory.MonitoringChangeMoveFactory</moveListFactoryClass>
+	      </moveListFactory>
+        </unionMoveSelector>
+        <acceptor>
+          <lateAcceptanceSize>400</lateAcceptanceSize>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>4</acceptedCountLimit>
+        </forager>
+      </localSearch>
+    </solver>
+  </solverBenchmark>
+</plannerBenchmark>
