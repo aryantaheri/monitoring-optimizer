@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import no.uis.ux.cipsi.net.monitoringbalancing.app.MonitoringBalancingHelloWorld;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 
 import org.optaplanner.core.api.domain.solution.Solution;
@@ -54,8 +55,11 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
             }
         }
         log.info("write: generated solutionFile: {}", outputSolutionFile);
+        // FIXME: dummy stuff fix these:
         XStreamSolutionFileIO io = new XStreamSolutionFileIO(MonitoringBalance.class);
         io.write(solution, new File(outputSolutionFile.getAbsoluteFile()+".xml"));
+        String analysis = MonitoringBalancingHelloWorld.toDisplayString((MonitoringBalance) solution);
+        log.info("write analysis:\n {}", analysis);
     }
 
 }
