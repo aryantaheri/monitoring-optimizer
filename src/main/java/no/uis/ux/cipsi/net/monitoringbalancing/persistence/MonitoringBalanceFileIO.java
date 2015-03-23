@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 
 import no.uis.ux.cipsi.net.monitoringbalancing.app.MonitoringBalancingHelloWorld;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.TxtFileUtil;
 
 import org.optaplanner.core.api.domain.solution.Solution;
 import org.optaplanner.persistence.common.api.domain.solution.SolutionFileIO;
@@ -33,7 +34,7 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
 
     @Override
     public Solution read(File inputSolutionFile) {
-
+        TxtFileUtil.setStaticValues(inputSolutionFile);
         return new MonitoringBalancingGenerator().createMonitoringBalance(false);
     }
 

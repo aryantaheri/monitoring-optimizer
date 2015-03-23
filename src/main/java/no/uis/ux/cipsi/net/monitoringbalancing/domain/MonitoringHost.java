@@ -13,7 +13,7 @@ public class MonitoringHost extends Host {
 
 
 
-    private static final double DEFAULT_HOST_COST = 100;
+    private static double DEFAULT_HOST_COST = 100;
 
     public MonitoringHost(String id) {
         super(id);
@@ -56,8 +56,13 @@ public class MonitoringHost extends Host {
         return cpuPower * nicSpeed * memory * storage;
     }
 
+    public static void setDefaultCost(double cost) {
+        DEFAULT_HOST_COST = cost;
+    }
 
-
+    public static double getDefaultCost() {
+        return DEFAULT_HOST_COST;
+    }
     //    @Override
     //    public int hashCode() {
     //        final int prime = 31;
