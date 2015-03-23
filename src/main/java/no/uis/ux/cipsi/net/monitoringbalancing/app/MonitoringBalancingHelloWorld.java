@@ -92,6 +92,7 @@ public class MonitoringBalancingHelloWorld {
         .append("\n     ").append(getSwitchCountInLayer(monitoringSwitchUsage, TYPE.EDGE)).append("-Edge ")
         .append("reuse: ").append(getSwitchLayerUsage(monitoringSwitchUsage, TYPE.EDGE))
         .append("\n #OnPathMonitoringSwitches: ").append(onPathMonitoringSwitches)
+        .append("\n #Flows: ").append(flows.size())
         .append("\n #MonitoringHosts: ").append(monitoringHostUsage.size())
         .append("\n Mean SwitchHost distance: ").append(distanceSum/flows.size())
 
@@ -99,7 +100,7 @@ public class MonitoringBalancingHelloWorld {
 
         displayString.append("\n Detailed Switch Stat: ");
         for (Entry<Node, Integer> swEntry : monitoringSwitchUsage.entrySet()) {
-            displayString.append("\n ")
+            displayString.append("\n    ")
             .append(swEntry.getKey()).append(" ")
             .append(((Switch)swEntry.getKey()).getType()).append(" reuse: ").append(swEntry.getValue()) ;
         }
