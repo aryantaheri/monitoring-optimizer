@@ -1,12 +1,16 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.persistence;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 
-import no.uis.ux.cipsi.net.monitoringbalancing.app.MonitoringBalancingHelloWorld;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.stats.MonitoringStats;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.stats.MonitoringStatsManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.TxtFileUtil;
 
 import org.optaplanner.core.api.domain.solution.Solution;
@@ -59,8 +63,35 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
         // FIXME: dummy stuff fix these:
         XStreamSolutionFileIO io = new XStreamSolutionFileIO(MonitoringBalance.class);
         io.write(solution, new File(outputSolutionFile.getAbsoluteFile()+".xml"));
-        String analysis = MonitoringBalancingHelloWorld.toDisplayString((MonitoringBalance) solution);
-        log.info("write analysis:\n {}", analysis);
+        writeStats(solution, new File(outputSolutionFile.getAbsoluteFile()+"-stats.txt"));
+    }
+
+    private void writeStats(Solution solution, File file) {
+        MonitoringStats stats = MonitoringStatsManager.getStats((MonitoringBalance) solution);
+        log.info("write stats to file {}:\n {}", file, stats);
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            writer.println("\n Solution Cost: ");
+            writer.println(solution.getScore());
+            writer.println("\n Solution Problems Facts: \n");
+            writer.println(solution.getProblemFacts());
+            writer.println("\n Monitoring Stats: \n");
+            writer.println(stats.getSwitchStats().getDetailedString());
+            writer.println(stats.getHostStats().getDetailedString());
+            writer.println(stats.getSwitchHostStats().toString());
+            writer.println(stats.getFlowStats().toString());
+
+            writer.println("\n Monitoring Facts: \n");
+            writer.println(stats.getSwitchStats().getFactsString());
+            writer.println(stats.getHostStats().getFactsString());
+            writer.println(stats.getFlowStats().getFactsString());
+            writer.flush();
+        } catch (IOException e) {
+            log.error("writeStats", e);
+        } finally {
+            if (writer != null) writer.close();
+        }
     }
 
 }
