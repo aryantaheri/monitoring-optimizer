@@ -6,13 +6,14 @@ public class Switch extends Node {
     private double forwardingCapacity;
     private int tunnels;
     private double initCost;
+    private double perFlowReuseCostRatio;
     private boolean supportsMirroring;
     private TYPE type;
 
     public static final double DEFAULT_SWITCH_FABRIC_CAPACITY = 176*Math.pow(10, 9);      // 176G bps
     public static final double DEFAULT_SWITCH_FORWARDING_CAPACITY = 132*Math.pow(10, 6);       // 132M pps
-    public static final int DEFAULT_SWITCH_COST = 10;
-    public static final double DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO = 0.05;
+    public static double DEFAULT_SWITCH_COST = 10;
+    public static double DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO = 0.05;
 
     public enum TYPE {
         CORE, AGGREGATION, EDGE
@@ -33,20 +34,22 @@ public class Switch extends Node {
         this.fabricCapacity = DEFAULT_SWITCH_FABRIC_CAPACITY;
         this.forwardingCapacity = DEFAULT_SWITCH_FORWARDING_CAPACITY;
         this.initCost = DEFAULT_SWITCH_COST;
+        this.perFlowReuseCostRatio = DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO;
         this.supportsMirroring = supportsMirroring;
         this.type = type;
     }
 
-    public static int getDefaultSwitchCost() {
-        return DEFAULT_SWITCH_COST;
-    }
 
     public double getInitCost() {
         return initCost;
     }
 
     public double getPerFlowReuseCost() {
-        return initCost*DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO;
+        return initCost*perFlowReuseCostRatio;
+    }
+
+    public double getPerFlowReuseCostRatio() {
+        return perFlowReuseCostRatio;
     }
 
     public double getFabricCapacity() {
@@ -61,58 +64,28 @@ public class Switch extends Node {
         return type;
     }
 
-    //    @Override
-    //    public int hashCode() {
-    //        final int prime = 31;
-    //        int result = 1;
-    //        long temp;
-    //        temp = Double.doubleToLongBits(fabricCapacity);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(forwardingCapacity);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(initCost);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        result = prime * result + (supportsMirroring ? 1231 : 1237);
-    //        result = prime * result + tunnels;
-    //        result = prime * result + ((type == null) ? 0 : type.hashCode());
-    //        return result;
-    //    }
-    //
-    //    @Override
-    //    public boolean equals(Object obj) {
-    //        if (this == obj) {
-    //            return true;
-    //        }
-    //        if (!super.equals(obj)) {
-    //            return false;
-    //        }
-    //        if (!(obj instanceof Switch)) {
-    //            return false;
-    //        }
-    //        Switch other = (Switch) obj;
-    //        if (Double.doubleToLongBits(fabricCapacity) != Double
-    //                .doubleToLongBits(other.fabricCapacity)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(forwardingCapacity) != Double
-    //                .doubleToLongBits(other.forwardingCapacity)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(initCost) != Double
-    //                .doubleToLongBits(other.initCost)) {
-    //            return false;
-    //        }
-    //        if (supportsMirroring != other.supportsMirroring) {
-    //            return false;
-    //        }
-    //        if (tunnels != other.tunnels) {
-    //            return false;
-    //        }
-    //        if (type != other.type) {
-    //            return false;
-    //        }
-    //        return true;
-    //    }
+    public static void setDefaultInitCost(double cost){
+        DEFAULT_SWITCH_COST = cost;
+    }
+
+    public static double getDefaultInitCost() {
+        return DEFAULT_SWITCH_COST;
+    }
+
+    public static void setDefaultPerFlowReuseCostRatio(double ratio) {
+        DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO = ratio;
+    }
+
+    public String getPropoertiesString() {
+        StringBuilder properties = new StringBuilder();
+        properties.append(toString())
+        .append(" ,fabricCapacity: ").append(fabricCapacity)
+        .append(" ,forwardingCapacity: ").append(forwardingCapacity)
+        .append(" ,initCost: ").append(initCost)
+        .append(" ,perFlowReuseCostRatio: ").append(perFlowReuseCostRatio);
+
+        return properties.toString();
+    }
 
     @Override
     public String toString() {

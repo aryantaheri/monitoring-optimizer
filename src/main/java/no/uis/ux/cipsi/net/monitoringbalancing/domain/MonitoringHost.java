@@ -1,5 +1,6 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.domain;
 
+
 /*
  * Monitoring Hosts (Service Node)
  */

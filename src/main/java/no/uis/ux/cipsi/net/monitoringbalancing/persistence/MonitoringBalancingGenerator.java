@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class MonitoringBalancingGenerator {
     private static Logger logger = LoggerFactory.getLogger(MonitoringBalancingGenerator.class);
 
+    private static double DEFAULT_FLOW_RATE = Math.pow(10, 8);//100Mbps 10^(2+6)
     public static void main(String[] args) {
         boolean includeMonitoringHostAsTrafficEndpoint = false;
         new MonitoringBalancingGenerator().createMonitoringBalance(includeMonitoringHostAsTrafficEndpoint);
@@ -58,15 +59,15 @@ public class MonitoringBalancingGenerator {
         for (Host srcHost : trafficEndpointHosts) {
             for (Host dstHost : trafficEndpointHosts) {
                 if (srcHost.equals(dstHost)) continue;
-                TrafficFlow flow = generateTrafficFlow(srcHost, dstHost);
+                double rate = DEFAULT_FLOW_RATE;
+                TrafficFlow flow = generateTrafficFlow(srcHost, dstHost, rate);
                 flows.add(flow);
             }
         }
         return flows;
     }
 
-    private TrafficFlow generateTrafficFlow(Host srcHost, Host dstHost) {
-        double rate = Math.pow(10, 8);//100Mbps 10^(2+6)
+    private TrafficFlow generateTrafficFlow(Host srcHost, Host dstHost, double rate) {
         int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
         List<WeightedLink> path = TopologyManager.getInstance().getRandomShortestPath(srcHost, dstHost, shortestPathsNum);
         TrafficFlow flow = new TrafficFlow(srcHost, dstHost,
@@ -99,5 +100,9 @@ public class MonitoringBalancingGenerator {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void setDefaultFlowRate(double rate) {
+        DEFAULT_FLOW_RATE = rate;
     }
 }
