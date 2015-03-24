@@ -7,6 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalancingGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,9 @@ public class TxtFileUtil {
 
     private static final String MONITORING_HOST_COST = "monitoring_host.cost";
 
+    private static final String LINK_COST_POD_SENSITIVITY = "link.cost_pod_sensitivity";
+
+    private static final String FLOW_RATE = "flow.rate";
 
     /**
      * Dummy reader
@@ -40,7 +46,20 @@ public class TxtFileUtil {
                 String value = line.split("=")[1];
                 if (line.startsWith(MONITORING_HOST_COST)){
                     MonitoringHost.setDefaultCost(Double.valueOf(value));
+
+                } else if (line.startsWith(SWITCH_INIT_COST)){
+                    Switch.setDefaultInitCost(Double.valueOf(value));
+                } else if (line.startsWith(SWITCH_PERFLOW_REUSE_COST_RATIO)){
+                    Switch.setDefaultPerFlowReuseCostRatio(Double.valueOf(value));
+
+                } else if (line.startsWith(LINK_COST_POD_SENSITIVITY)){
+                    WeightedLink.setDefaultPodSensitivity(Double.valueOf(value));
+
+                } else if (line.startsWith(FLOW_RATE)){
+                    MonitoringBalancingGenerator.setDefaultFlowRate(Double.valueOf(value));
                 }
+
+
             }
 
         } catch (FileNotFoundException e) {
