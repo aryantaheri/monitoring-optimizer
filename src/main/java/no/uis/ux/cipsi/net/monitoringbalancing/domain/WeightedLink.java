@@ -28,6 +28,9 @@ public class WeightedLink implements Serializable{
         return speed;
     }
 
+    public double getPodSensitivity() {
+        return podSensitivity;
+    }
     /**
      * SwitchCost = (speed/flowRate)*distance*podSensitivity*LinksCost
      * LinkCost = SwitchCost/((speed/flowRate)*podSensitivity)
