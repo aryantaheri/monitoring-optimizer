@@ -8,9 +8,14 @@
     <problemBenchmarks>
       <!-- <xStreamAnnotatedClass>no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance</xStreamAnnotatedClass>  -->
       <solutionFileIOClass>no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalanceFileIO</solutionFileIOClass>
-      <!--<inputSolutionFile>data/cloudbalancing/unsolved/2computers-6processes.xml</inputSolutionFile>-->
-      <!--<inputSolutionFile>data/cloudbalancing/unsolved/3computers-9processes.xml</inputSolutionFile>-->
-      <inputSolutionFile>data/monitoringbalancing/unsolved/input.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod1-rate100.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod1-rate300.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod2-rate100.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod2-rate300.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host10000-linkpod1-rate100.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host10000-linkpod1-rate300.txt</inputSolutionFile>
+      <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host10000-linkpod2-rate100.txt</inputSolutionFile>
+
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
       <problemStatisticType>BEST_SCORE</problemStatisticType>
       <!--<problemStatisticType>STEP_SCORE</problemStatisticType>-->
@@ -34,7 +39,7 @@
         <initializingScoreTrend>ONLY_DOWN/ONLY_DOWN</initializingScoreTrend>
       </scoreDirectorFactory>
       <termination>
-        <minutesSpentLimit>5</minutesSpentLimit>
+        <minutesSpentLimit>1</minutesSpentLimit>
       </termination>
 
       <constructionHeuristic>
