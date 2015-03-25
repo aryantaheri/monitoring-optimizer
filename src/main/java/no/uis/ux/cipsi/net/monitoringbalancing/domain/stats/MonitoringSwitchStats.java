@@ -35,7 +35,8 @@ public class MonitoringSwitchStats {
             Map<Switch, Integer> monitoringSwitchUsage ) {
         this.onPathMonitoringSwitches = onPathMonitoringSwitches;
         this.flowNum = flowNum;
-        this.monitoringSwitchUsage = new TreeMap<Switch, Integer>(monitoringSwitchUsage);
+        this.monitoringSwitchUsage = new TreeMap<Switch, Integer>(new NodeComparator());
+        this.monitoringSwitchUsage.putAll(monitoringSwitchUsage);
 
         this.coreSwMonNum = getSwitchCountInLayer(TYPE.CORE);
         this.aggrSwMonNum = getSwitchCountInLayer(TYPE.AGGREGATION);
@@ -46,6 +47,8 @@ public class MonitoringSwitchStats {
         this.edgeSwMonReuse = getSwitchLayerUsage(TYPE.EDGE);
 
         this.monitoringSwitchesNum = monitoringSwitchUsage.size();
+        System.out.println(monitoringSwitchUsage);
+        System.out.println(this.monitoringSwitchUsage);
         initStats();
     }
 
@@ -106,6 +109,7 @@ public class MonitoringSwitchStats {
     public String getDetailedString() {
         StringBuilder builder = new StringBuilder();
         builder.append(toString());
+        builder.append("\n Monitoring Switch Details: ");
         for (Entry<Switch, Integer> swEntry : monitoringSwitchUsage.entrySet()) {
             builder.append("\n    ")
             .append(swEntry.getKey()).append(" ")

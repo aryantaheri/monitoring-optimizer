@@ -18,7 +18,8 @@ public class MonitoringHostStats {
             Map<MonitoringHost, Integer> monitoringHostUsage) {
 
         this.flowNum = flowNum;
-        this.monitoringHostUsage = new TreeMap<MonitoringHost, Integer>(monitoringHostUsage);
+        this.monitoringHostUsage = new TreeMap<MonitoringHost, Integer>(new NodeComparator());
+        this.monitoringHostUsage.putAll(monitoringHostUsage);
         initStats();
     }
 
@@ -52,6 +53,7 @@ public class MonitoringHostStats {
     public String getDetailedString() {
         StringBuilder builder = new StringBuilder();
         builder.append("\n #MonitoringHosts: ").append(monitoringHostUsage.size());
+        builder.append("\n Monitoring Hosts Details: ");
         for (Entry<MonitoringHost, Integer> hostEntry : monitoringHostUsage.entrySet()) {
             builder.append("\n  ").append(hostEntry.getKey()).append(" reuse: ").append(hostEntry.getValue());
         }
