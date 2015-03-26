@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 
@@ -19,11 +21,14 @@ public class MonitoringSwitchHostStats {
 
     Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap;
     List<List<WeightedLink>> monitoringPaths;
+    Yen<Node,WeightedLink> algo;
 
     public MonitoringSwitchHostStats(
-            Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap) {
+            Yen<Node,WeightedLink> algo, Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap) {
+        this.algo = algo;
         this.monitoringSwitchHostMap = monitoringSwitchHostMap;
         this.monitoringPaths = new ArrayList<List<WeightedLink>>();
+
     }
 
     private String getSwitchMapString() {
@@ -95,7 +100,7 @@ public class MonitoringSwitchHostStats {
     private DescriptiveStatistics getDistanceStats(Switch sw, Set<MonitoringHost> hosts) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
         for (MonitoringHost host : hosts) {
-            List<WeightedLink> path = TopologyManager.getInstance().getRandomShortestPath(sw, host, 4);
+            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, sw, host, 4);
             stats.addValue(path.size());
             // TODO: move it to a dedicated method, here for efficiency
             monitoringPaths.add(path);
@@ -106,7 +111,7 @@ public class MonitoringSwitchHostStats {
     private DescriptiveStatistics getDistanceStats(MonitoringHost host, Set<Switch> switches) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
         for (Switch sw : switches) {
-            List<WeightedLink> path = TopologyManager.getInstance().getRandomShortestPath(host, sw, 4);
+            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, host, sw, 4);
             stats.addValue(path.size());
         }
         return stats;

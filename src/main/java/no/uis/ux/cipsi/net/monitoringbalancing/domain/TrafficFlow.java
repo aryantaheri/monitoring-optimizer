@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.List;
 
-import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.solver.MonitoringHostStrengthComparator;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.solver.MonitoringSwitchStrengthComparator;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.solver.TrafficFlowDifficultyComparator;
@@ -36,6 +35,7 @@ public class TrafficFlow implements Serializable{
 
     private Switch monitoringSwitch;
     private MonitoringHost monitoringHost;
+    private List<Switch> onPathMonitoringSwitches;
 
     public TrafficFlow() {
         // Clones
@@ -43,7 +43,7 @@ public class TrafficFlow implements Serializable{
 
     public TrafficFlow(Node srcNode, Node dstNode, InetAddress srcIp,
             InetAddress dstIp, Short srcPort, Short dstPort, Short protocol,
-            double rate, List<WeightedLink> path) {
+            double rate, List<WeightedLink> path, List<Switch> onPathMonitoringSwitches) {
         this.srcNode = srcNode;
         this.dstNode = dstNode;
         this.srcIp = srcIp;
@@ -53,6 +53,7 @@ public class TrafficFlow implements Serializable{
         this.protocol = protocol;
         this.rate = rate;
         this.path = path;
+        this.onPathMonitoringSwitches = onPathMonitoringSwitches;
     }
     public Node getSrcNode() {
         return srcNode;
@@ -120,7 +121,7 @@ public class TrafficFlow implements Serializable{
 
     @ValueRangeProvider(id = "trafficFlowOnPathSwitchRange")
     private List<Switch> getPossibleMonitoringSwitches() {
-        return TopologyManager.getInstance().getSwitchesOnPath(path);
+        return onPathMonitoringSwitches;
     }
 
     @PlanningVariable(valueRangeProviderRefs = {"monitoringHostRange"},

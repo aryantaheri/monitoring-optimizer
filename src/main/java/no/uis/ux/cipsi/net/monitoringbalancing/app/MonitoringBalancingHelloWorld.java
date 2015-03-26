@@ -28,7 +28,8 @@ public class MonitoringBalancingHelloWorld {
 
         // Load a problem
         boolean includeMonitoringHostAsTrafficEndpoint = false;
-        MonitoringBalance unsolvedMonitoringBalance = new MonitoringBalancingGenerator().createMonitoringBalance(includeMonitoringHostAsTrafficEndpoint);
+        int kPort = 4;
+        MonitoringBalance unsolvedMonitoringBalance = new MonitoringBalancingGenerator().createMonitoringBalance(kPort, includeMonitoringHostAsTrafficEndpoint);
 
         // Solve the problem
         solver.solve(unsolvedMonitoringBalance);
@@ -65,8 +66,8 @@ public class MonitoringBalancingHelloWorld {
             monitoringSwitch = flow.getMonitoringSwitch();
             monitoringHost = flow.getMonitoringHost();
             path = flow.getPath();
-            isOnPath = TopologyManager.getInstance().isSwitchOnPath(path, monitoringSwitch);
-            distance = TopologyManager.getInstance().getRandomShortestPath(flow.getMonitoringSwitch(), flow.getMonitoringHost(), 4).size();
+            isOnPath = TopologyManager.isSwitchOnPath(monitoringBalance.getTopology(), path, monitoringSwitch);
+            distance = TopologyManager.getRandomShortestPath(monitoringBalance.getAlgo(), flow.getMonitoringSwitch(), flow.getMonitoringHost(), 4).size();
 
 
             if (isOnPath) onPathMonitoringSwitches++;

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import mulavito.algorithms.shortestpath.ksp.Yen;
+
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
 import org.optaplanner.core.api.domain.solution.Solution;
@@ -15,12 +17,16 @@ import org.optaplanner.persistence.xstream.impl.score.XStreamScoreConverter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 
+import edu.uci.ics.jung.graph.Graph;
+
 @PlanningSolution
 @XStreamAlias("MonitoringBalance")
 public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Graph<Node, WeightedLink> topology;
+    private Yen<Node, WeightedLink> algo;
     List<Switch> monitoringSwitches;
     List<MonitoringHost> monitoringHosts;
     List<TrafficFlow> trafficFlows;
@@ -33,12 +39,25 @@ public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Ser
         // For generating clones
     }
 
-    public MonitoringBalance(List<Switch> monitoringSwitches,
-            List<MonitoringHost> monitoringHosts, List<TrafficFlow> trafficFlows) {
-        super();
+    public MonitoringBalance(Graph<Node, WeightedLink> topology,
+            Yen<Node, WeightedLink> algo,
+            List<Switch> monitoringSwitches,
+            List<MonitoringHost> monitoringHosts,
+            List<TrafficFlow> trafficFlows) {
+
+        this.topology = topology;
+        this.algo = algo;
         this.monitoringSwitches = monitoringSwitches;
         this.monitoringHosts = monitoringHosts;
         this.trafficFlows = trafficFlows;
+    }
+
+    public Graph<Node, WeightedLink> getTopology() {
+        return topology;
+    }
+
+    public Yen<Node, WeightedLink> getAlgo() {
+        return algo;
     }
 
     @ValueRangeProvider(id = "monitoringSwitchRange")

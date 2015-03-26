@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
@@ -17,6 +19,8 @@ import org.optaplanner.core.api.score.buildin.hardsoftbigdecimal.HardSoftBigDeci
 import org.optaplanner.core.impl.score.director.easy.EasyScoreCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.uci.ics.jung.graph.Graph;
 
 public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculator<MonitoringBalance> {
     private static Logger log = LoggerFactory.getLogger(MonitoringBalancingEasyScoreCalculator.class);
@@ -30,6 +34,7 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
     private Map<MonitoringHost, Double> monitoringHostCostMap;
     private Map<WeightedLink, Double> monitoringLinkCostMap;
 
+
     @Override
     public HardSoftBigDecimalScore calculateScore(MonitoringBalance monitoringBalance) {
         linkUsageMap = new HashMap<WeightedLink, Double>();
@@ -42,8 +47,10 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
         monitoringLinkCostMap = new HashMap<WeightedLink, Double>();
 
         List<TrafficFlow> trafficFlows = monitoringBalance.getTrafficFlows();
-        calculateTrafficResourceUsage(trafficFlows);
-        calculateMonitoringResourceUsage(trafficFlows);
+        Graph<Node, WeightedLink> topology = monitoringBalance.getTopology();
+        Yen<Node, WeightedLink> algo = monitoringBalance.getAlgo();
+        calculateTrafficResourceUsage(topology, algo, trafficFlows);
+        calculateMonitoringResourceUsage(topology, algo, trafficFlows);
 
         double hardScore = sumHardScore();
         double softScore = sumSoftScore();
@@ -97,9 +104,9 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
     }
 
 
-    private void calculateMonitoringResourceUsage(List<TrafficFlow> trafficFlows) {
+    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, List<TrafficFlow> trafficFlows) {
         for (TrafficFlow trafficFlow : trafficFlows) {
-            calculateMonitoringResourceUsage(trafficFlow);
+            calculateMonitoringResourceUsage(topology, algo, trafficFlow);
         }
     }
 
@@ -109,30 +116,30 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
      * which should account for the tunneling overhead as well.
      * @param trafficFlow
      */
-    private void calculateMonitoringResourceUsage(TrafficFlow trafficFlow) {
+    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, TrafficFlow trafficFlow) {
         if (trafficFlow.getMonitoringHost() == null || trafficFlow.getMonitoringSwitch() == null) {
             //            log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
             return;
         }
         //        log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
-        List<WeightedLink> path = TopologyManager.getInstance().getRandomShortestPath(trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
+        List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
         calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD);
         calculateTrafficFlowSwitchUsage(trafficFlow, path);
         calculateTrafficFlowHostUsage(trafficFlow, path);
 
-        calculateMonitoringServiceSwitchCost(trafficFlow);
+        calculateMonitoringServiceSwitchCost(topology, trafficFlow);
         calculateMonitoringServiceHostCost(trafficFlow);
         calculateMonitoringServiceLinkCost(trafficFlow, path);
     }
 
-    private void calculateMonitoringServiceSwitchCost(TrafficFlow trafficFlow) {
+    private void calculateMonitoringServiceSwitchCost(Graph<Node,WeightedLink> topology, TrafficFlow trafficFlow) {
         Switch monitoringSwitch = trafficFlow.getMonitoringSwitch();
         Double usage = monitoringSwitchCostMap.get(monitoringSwitch);
         if (usage == null){
             usage = new Double(monitoringSwitch.getInitCost());
         }
         usage += monitoringSwitch.getPerFlowReuseCost();
-        if (!TopologyManager.getInstance().isSwitchOnPath(trafficFlow.getPath(), monitoringSwitch)){
+        if (!TopologyManager.isSwitchOnPath(topology, trafficFlow.getPath(), monitoringSwitch)){
             usage += 10000;
         }
         monitoringSwitchCostMap.put(monitoringSwitch, usage);
@@ -162,8 +169,10 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
     /**
      * End-to-end traffic consume some resources on the switches, links, and hosts.
      * Calculate regular connectivity resource consumption.
+     * @param algo
+     * @param topology
      */
-    private void calculateTrafficResourceUsage(List<TrafficFlow> trafficFlows) {
+    private void calculateTrafficResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, List<TrafficFlow> trafficFlows) {
         for (TrafficFlow trafficFlow : trafficFlows) {
             calculateTrafficFlowResourceUsage(trafficFlow);
         }

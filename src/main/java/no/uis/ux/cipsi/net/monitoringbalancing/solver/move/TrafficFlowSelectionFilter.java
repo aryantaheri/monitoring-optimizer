@@ -20,7 +20,7 @@ public class TrafficFlowSelectionFilter implements SelectionFilter<TrafficFlow>{
             System.out.println(trafficFlow + " " + trafficFlow.getMonitoringHost() + " " + trafficFlow.getMonitoringSwitch());
             return false;
         } else {
-            boolean onPath = TopologyManager.getInstance().getSwitchesOnPath(trafficFlow.getPath()).contains(trafficFlow.getMonitoringSwitch());
+            boolean onPath = TopologyManager.getSwitchesOnPath(monitoringBalance.getTopology(), trafficFlow.getPath()).contains(trafficFlow.getMonitoringSwitch());
             System.out.println(trafficFlow + " " + trafficFlow.getMonitoringSwitch() + " isOnPath: " + onPath);
             return onPath;
         }

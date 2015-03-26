@@ -39,7 +39,8 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
     @Override
     public Solution read(File inputSolutionFile) {
         TxtFileUtil.setStaticValues(inputSolutionFile);
-        return new MonitoringBalancingGenerator().createMonitoringBalance(false);
+        int kPort = Integer.parseInt(TxtFileUtil.getConfig(inputSolutionFile, TxtFileUtil.TOPOLOGY_KPORT));
+        return new MonitoringBalancingGenerator().createMonitoringBalance(kPort, false);
     }
 
     @Override

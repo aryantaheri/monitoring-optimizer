@@ -6,9 +6,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
+import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
@@ -18,6 +18,8 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 
 import org.apache.commons.collections15.map.HashedMap;
+
+import edu.uci.ics.jung.graph.Graph;
 
 public class MonitoringStatsManager {
 
@@ -32,9 +34,9 @@ public class MonitoringStatsManager {
             }
         });
 
-        MonitoringSwitchStats switchStats = getMonitoringSwitchStats(flows);
+        MonitoringSwitchStats switchStats = getMonitoringSwitchStats(monitoringSolution.getTopology(), flows);
         MonitoringHostStats hostStats = getMonitoringHostStats(flows);
-        MonitoringSwitchHostStats switchHostStats = getMonitoringSwitchHostStats(flows);
+        MonitoringSwitchHostStats switchHostStats = getMonitoringSwitchHostStats(monitoringSolution.getAlgo(), flows);
         TrafficFlowStats flowStats = new TrafficFlowStats(flows);
 
         MonitoringStats stats = new MonitoringStats(switchStats, hostStats, switchHostStats, flowStats);
@@ -42,7 +44,7 @@ public class MonitoringStatsManager {
     }
 
 
-    public static MonitoringSwitchStats getMonitoringSwitchStats(List<TrafficFlow> flows) {
+    public static MonitoringSwitchStats getMonitoringSwitchStats(Graph<Node,WeightedLink> topology, List<TrafficFlow> flows) {
         Map<Switch, Integer> monitoringSwitchUsage = new HashedMap<Switch, Integer>();
         int onPathMonitoringSwitches = 0;
 
@@ -52,7 +54,7 @@ public class MonitoringStatsManager {
         for (TrafficFlow trafficFlow : flows) {
             monitoringSwitch = trafficFlow.getMonitoringSwitch();
             path = trafficFlow.getPath();
-            isOnPath = TopologyManager.getInstance().isSwitchOnPath(path, monitoringSwitch);
+            isOnPath = TopologyManager.isSwitchOnPath(topology, path, monitoringSwitch);
 
             if(isOnPath) onPathMonitoringSwitches++;
             incrementMap(monitoringSwitchUsage, monitoringSwitch);
@@ -80,13 +82,13 @@ public class MonitoringStatsManager {
         return stats;
     }
 
-    public static MonitoringSwitchHostStats getMonitoringSwitchHostStats(List<TrafficFlow> flows) {
+    public static MonitoringSwitchHostStats getMonitoringSwitchHostStats(Yen<Node, WeightedLink> algo, List<TrafficFlow> flows) {
         Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap = new HashedMap<Switch, Set<MonitoringHost>>();
 
         for (TrafficFlow trafficFlow : flows) {
             addToMap(monitoringSwitchHostMap, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
         }
-        MonitoringSwitchHostStats stats = new MonitoringSwitchHostStats(monitoringSwitchHostMap);
+        MonitoringSwitchHostStats stats = new MonitoringSwitchHostStats(algo, monitoringSwitchHostMap);
         return stats;
     }
 
@@ -101,75 +103,6 @@ public class MonitoringStatsManager {
         }
         hosts.add(monitoringHost);
         map.put(monitoringSwitch, hosts);
-    }
-
-
-    public static String toDisplayString(MonitoringBalance monitoringBalance) {
-        List<TrafficFlow> flows = monitoringBalance.getTrafficFlows();
-        Collections.sort(flows, new Comparator<TrafficFlow>() {
-
-            @Override
-            public int compare(TrafficFlow f1, TrafficFlow f2) {
-                return (f1.getSrcIp().toString() + f1.getDstIp().toString()).
-                        compareToIgnoreCase((f2.getSrcIp().toString() + f2.getDstIp().toString()));
-            }
-        });
-        StringBuilder displayString = new StringBuilder();
-        Map<Node, Integer> monitoringSwitchUsage = new HashedMap<Node, Integer>();
-        Map<Node, Integer> monitoringHostUsage = new HashedMap<Node, Integer>();
-        int onPathMonitoringSwitches = 0;
-        int distanceSum = 0;
-
-        Switch monitoringSwitch;
-        MonitoringHost monitoringHost;
-        List<WeightedLink> path;
-        boolean isOnPath = false;
-        int distance = 0;
-        displayString.append("Score: ").append(monitoringBalance.getScore()).append('\n');
-        for (TrafficFlow flow : flows) {
-            monitoringSwitch = flow.getMonitoringSwitch();
-            monitoringHost = flow.getMonitoringHost();
-            path = flow.getPath();
-            isOnPath = TopologyManager.getInstance().isSwitchOnPath(path, monitoringSwitch);
-            distance = TopologyManager.getInstance().getRandomShortestPath(flow.getMonitoringSwitch(), flow.getMonitoringHost(), 4).size();
-
-
-            if (isOnPath) onPathMonitoringSwitches++;
-            distanceSum += distance;
-            //            incrementMap(monitoringSwitchUsage, monitoringSwitch);
-            //            incrementMap(monitoringHostUsage, monitoringHost);
-
-
-            displayString.append(" ").append(flow).append(" -> ")
-            .append(monitoringSwitch).append(" ")
-            .append(monitoringHost).append(" ")
-            .append(" SwitchOnPath: ").append(isOnPath)
-            .append(" Distance: ~").append(distance)
-            .append('\n');
-        }
-
-        //        displayString.append(" #MonitoringSwitches: ").append(monitoringSwitchUsage.size())
-        //        .append("\n   MonitoringSwitchesLayer: ")
-        //        .append("\n     ").append(getSwitchCountInLayer(monitoringSwitchUsage, TYPE.CORE)).append("-Core ")
-        //        .append("reuse: ").append(getSwitchLayerUsage(monitoringSwitchUsage, TYPE.CORE))
-        //        .append("\n     ").append(getSwitchCountInLayer(monitoringSwitchUsage, TYPE.AGGREGATION)).append("-Aggr ")
-        //        .append("reuse: ").append(getSwitchLayerUsage(monitoringSwitchUsage, TYPE.AGGREGATION))
-        //        .append("\n     ").append(getSwitchCountInLayer(monitoringSwitchUsage, TYPE.EDGE)).append("-Edge ")
-        //        .append("reuse: ").append(getSwitchLayerUsage(monitoringSwitchUsage, TYPE.EDGE))
-        //        .append("\n #OnPathMonitoringSwitches: ").append(onPathMonitoringSwitches)
-        //        .append("\n #Flows: ").append(flows.size())
-        //        .append("\n #MonitoringHosts: ").append(monitoringHostUsage.size())
-        //        .append("\n Mean SwitchHost distance: ").append(distanceSum/flows.size())
-        //
-        //        ;
-
-        displayString.append("\n Detailed Switch Stat: ");
-        for (Entry<Node, Integer> swEntry : monitoringSwitchUsage.entrySet()) {
-            displayString.append("\n    ")
-            .append(swEntry.getKey()).append(" ")
-            .append(((Switch)swEntry.getKey()).getType()).append(" reuse: ").append(swEntry.getValue()) ;
-        }
-        return displayString.toString();
     }
 
 

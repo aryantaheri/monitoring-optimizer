@@ -17,8 +17,10 @@ import org.slf4j.LoggerFactory;
 public class TxtFileUtil {
     private static Logger log = LoggerFactory.getLogger(TxtFileUtil.class);
 
+    // TODO: change to enum
     private static final String COMMENTS = "#";
 
+    public static final String TOPOLOGY_KPORT = "topology.kport";
     private static final String SWITCH_FABRIC_CAPACITY = "sw.fabric_capacity";
     private static final String SWITCH_FORWARDING_CAPACITY = "sw.forwarding_capacity";
     private static final String SWITCH_INIT_COST = "sw.init_cost";
@@ -57,6 +59,9 @@ public class TxtFileUtil {
 
                 } else if (line.startsWith(FLOW_RATE)){
                     MonitoringBalancingGenerator.setDefaultFlowRate(Double.valueOf(value));
+
+                } else if (line.startsWith(TOPOLOGY_KPORT)){
+                    //TODO
                 }
 
 
@@ -69,5 +74,34 @@ public class TxtFileUtil {
         } catch (IOException e) {
             log.error("setStaticValues ", e);
         }
+    }
+
+    public static String getConfig(File input, String name) {
+        BufferedReader reader = null;
+        String value = null;
+        try {
+            reader = new BufferedReader(new FileReader(input));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(COMMENTS)) continue;
+
+                if (line.startsWith(name)){
+                    value = line.split("=")[1];
+                    return value;
+                }
+
+            }
+
+        } catch (Exception e) {
+            log.error("getConfig ", e);
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+                log.error("getConfig ", e);
+            }
+        }
+        return null;
     }
 }

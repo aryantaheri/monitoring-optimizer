@@ -25,47 +25,31 @@ import edu.uci.ics.jung.graph.Graph;
 public class TopologyManager {
 
     private static Logger log = LoggerFactory.getLogger(TopologyManager.class);
-    private static final int K = 4;
+    private static final int kPort = 4;
 
-    private Graph<Node, WeightedLink> topology;
-    private Yen<Node, WeightedLink> yenKShortestPathsAlgo;
-
-    private static TopologyManager instance;
-
-    public static void main(String[] args) {
-
-    }
-
-    public void test(){
-        System.out.println(topology.getVertexCount());
-        System.out.println(topology.getEdgeCount());
-        for (WeightedLink link : topology.getEdges()) {
-            System.out.println(link + "[" + topology.getSource(link) + "->" + topology.getDest(link) + "]");
-        }
-        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(topology.getVertices().toArray(new Switch[topology.getVertexCount()])[0], topology.getVertices().toArray(new Switch[topology.getVertexCount()])[1], 5);
-        for (List<WeightedLink> path : paths) {
-            System.out.println(path);
-        }
-    }
-
-    public TopologyManager() {
-        topology = buildTopology();
-        yenKShortestPathsAlgo = new Yen<Node, WeightedLink>(topology, weightTransformer);
-    }
-
-    public static TopologyManager getInstance() {
-        if (instance == null){
-            instance = new TopologyManager();
-        }
-        return instance;
-    }
-
-    public Graph<Node, WeightedLink> getTopology() {
-        return topology;
-    }
+    //    private Graph<Node, WeightedLink> topology;
+    //    private Yen<Node, WeightedLink> yenKShortestPathsAlgo;
 
 
-    public List<WeightedLink> getRandomShortestPath(Node src, Node dst, int k){
+    //    public void test(){
+    //        System.out.println(topology.getVertexCount());
+    //        System.out.println(topology.getEdgeCount());
+    //        for (WeightedLink link : topology.getEdges()) {
+    //            System.out.println(link + "[" + topology.getSource(link) + "->" + topology.getDest(link) + "]");
+    //        }
+    //        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(topology.getVertices().toArray(new Switch[topology.getVertexCount()])[0], topology.getVertices().toArray(new Switch[topology.getVertexCount()])[1], 5);
+    //        for (List<WeightedLink> path : paths) {
+    //            System.out.println(path);
+    //        }
+    //    }
+
+    //    public TopologyManager() {
+    //        topology = buildTopology(kPort);
+    //        yenKShortestPathsAlgo = new Yen<Node, WeightedLink>(topology, weightTransformer);
+    //    }
+
+
+    public static List<WeightedLink> getRandomShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
         List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
         if (paths.size() < k){
@@ -76,17 +60,28 @@ public class TopologyManager {
         return paths.get(randomIndex);
     }
 
-    public List<List<WeightedLink>> getKShortestPaths(Node src, Node dst, int k){
+    public static List<List<WeightedLink>> getKShortestPaths(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
         List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
         return paths;
     }
 
-    private Graph<Node, WeightedLink> buildTopology() {
+    public static Yen<Node,WeightedLink> buildShortestPathAlgo(Graph<Node, WeightedLink> topology) {
+        Yen<Node, WeightedLink> yenKShortestPathsAlgo = new Yen<Node, WeightedLink>(
+                topology, new Transformer<WeightedLink, Number>() {
+                    @Override
+                    public Number transform(WeightedLink link) {
+                        return link.getWeight();
+                    }
+                });
+        return yenKShortestPathsAlgo;
+    }
+
+    public static Graph<Node, WeightedLink> buildTopology(int kPort) {
         Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
 
-        int cores = (int) (Math.pow(K, 2)/4);
-        int aggrs = (int) (Math.pow(K, 2)/2);
-        int edges = (int) (Math.pow(K, 2)/2);
+        int cores = (int) (Math.pow(kPort, 2)/4);
+        int aggrs = (int) (Math.pow(kPort, 2)/2);
+        int edges = (int) (Math.pow(kPort, 2)/2);
         int switches = 0;
         int links = 0;
         int hosts = 0;
@@ -101,11 +96,11 @@ public class TopologyManager {
         }
 
         // Create K pods
-        for (int i = 0; i < K; i++) {
+        for (int i = 0; i < kPort; i++) {
 
             // Create pod's aggrs
-            Switch[] podAggrArray = new Switch[K/2];
-            for (int j = 0; j < K/2; j++) {
+            Switch[] podAggrArray = new Switch[kPort/2];
+            for (int j = 0; j < kPort/2; j++) {
                 switches++;
                 podAggrArray[j] = new Switch("sw"+switches, true, TYPE.AGGREGATION);
                 topology.addVertex(podAggrArray[j]);
@@ -114,7 +109,7 @@ public class TopologyManager {
                 // j*(k/2): # previously filled ports = connected core switches to this pod
                 //        : index of first core switch to be connected to this aggr switch
                 // (j+1)*(k/2): index of last core switch to be connected to this aggr switch
-                for (int k = j*(K/2); k < (j+1)*(K/2); k++) {
+                for (int k = j*(kPort/2); k < (j+1)*(kPort/2); k++) {
                     links++;
                     topology.addEdge(new WeightedLink("link"+links), podAggrArray[j], coreArray[k]);
                     links++;
@@ -123,14 +118,14 @@ public class TopologyManager {
             }
 
             // Create pod's edges
-            for (int j = 0; j < K/2; j++) {
+            for (int j = 0; j < kPort/2; j++) {
                 switches++;
                 Switch edgeSw = new Switch("sw"+switches, true, TYPE.EDGE);
                 topology.addVertex(edgeSw);
 
                 boolean monitoringHostCreated = false;
                 // Connect edge to aggrs
-                for (int k = 0; k < K/2; k++) {
+                for (int k = 0; k < kPort/2; k++) {
                     links++;
                     topology.addEdge(new WeightedLink("link"+links), edgeSw, podAggrArray[k]);
                     links++;
@@ -161,7 +156,7 @@ public class TopologyManager {
         return topology;
     }
 
-    public List<Switch> getSwitchesOnPath(List<WeightedLink> path){
+    public static List<Switch> getSwitchesOnPath(Graph<Node, WeightedLink> topology, List<WeightedLink> path){
         List<Switch> switchesOnPath = new ArrayList<Switch>();
         for (WeightedLink link : path) {
             Node src = topology.getSource(link);
@@ -177,13 +172,13 @@ public class TopologyManager {
         return switchesOnPath;
     }
 
-    public boolean isSwitchOnPath(List<WeightedLink> path, Switch monitoringSwitch) {
-        return getSwitchesOnPath(path).contains(monitoringSwitch);
+    public static boolean isSwitchOnPath(Graph<Node, WeightedLink> topology, List<WeightedLink> path, Switch monitoringSwitch) {
+        return getSwitchesOnPath(topology, path).contains(monitoringSwitch);
     }
 
 
 
-    public List<Switch> getMonitoringSwitches() {
+    public static List<Switch> getMonitoringSwitches(Graph<Node, WeightedLink> topology) {
         List<Switch> switches = new ArrayList<Switch>();
         Collection<Node> nodes = topology.getVertices();
         for (Node node : nodes) {
@@ -194,7 +189,7 @@ public class TopologyManager {
         return switches;
     }
 
-    public List<Host> getHosts(boolean includeMonitoringHosts) {
+    public static List<Host> getHosts(Graph<Node, WeightedLink> topology, boolean includeMonitoringHosts) {
         List<Host> hosts = new ArrayList<Host>();
         Collection<Node> nodes = topology.getVertices();
         for (Node node : nodes) {
@@ -211,7 +206,7 @@ public class TopologyManager {
         return hosts;
     }
 
-    public List<MonitoringHost> getMonitoringHosts() {
+    public static List<MonitoringHost> getMonitoringHosts(Graph<Node, WeightedLink> topology) {
         List<MonitoringHost> hosts = new ArrayList<MonitoringHost>();
         Collection<Node> nodes = topology.getVertices();
         for (Node node : nodes) {
@@ -221,13 +216,5 @@ public class TopologyManager {
         }
         return hosts;
     }
-
-
-    static Transformer<WeightedLink, Number> weightTransformer = new Transformer<WeightedLink, Number>() {
-        @Override
-        public Number transform(WeightedLink link) {
-            return link.getWeight();
-        }
-    };
 
 }
