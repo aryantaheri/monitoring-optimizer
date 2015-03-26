@@ -16,10 +16,10 @@ public class MonitoringHost extends Host {
 
     private static double DEFAULT_HOST_COST = 100;
 
-    public MonitoringHost(String id) {
+    public MonitoringHost(String id, double cost) {
         super(id);
         this.id = id;
-        this.cost = DEFAULT_HOST_COST;
+        this.cost = cost;
     }
 
     public double getCpuPower() {
@@ -57,65 +57,14 @@ public class MonitoringHost extends Host {
         return cpuPower * nicSpeed * memory * storage;
     }
 
-    public static void setDefaultCost(double cost) {
-        DEFAULT_HOST_COST = cost;
-    }
-
-    public static double getDefaultCost() {
-        return DEFAULT_HOST_COST;
-    }
-    //    @Override
-    //    public int hashCode() {
-    //        final int prime = 31;
-    //        int result = 1;
-    //        long temp;
-    //        temp = Double.doubleToLongBits(cost);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(cpuPower);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(memory);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(nicSpeed);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        temp = Double.doubleToLongBits(storage);
-    //        result = prime * result + (int) (temp ^ (temp >>> 32));
-    //        return result;
+    //    public static void setDefaultCost(double cost) {
+    //        DEFAULT_HOST_COST = cost;
     //    }
     //
-    //    @Override
-    //    public boolean equals(Object obj) {
-    //        if (this == obj) {
-    //            return true;
-    //        }
-    //        if (!super.equals(obj)) {
-    //            return false;
-    //        }
-    //        if (!(obj instanceof MonitoringHost)) {
-    //            return false;
-    //        }
-    //        MonitoringHost other = (MonitoringHost) obj;
-    //        if (Double.doubleToLongBits(cost) != Double
-    //                .doubleToLongBits(other.cost)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(cpuPower) != Double
-    //                .doubleToLongBits(other.cpuPower)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(memory) != Double
-    //                .doubleToLongBits(other.memory)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(nicSpeed) != Double
-    //                .doubleToLongBits(other.nicSpeed)) {
-    //            return false;
-    //        }
-    //        if (Double.doubleToLongBits(storage) != Double
-    //                .doubleToLongBits(other.storage)) {
-    //            return false;
-    //        }
-    //        return true;
+    //    public static double getDefaultCost() {
+    //        return DEFAULT_HOST_COST;
     //    }
+
 
     @Override
     public String toString() {

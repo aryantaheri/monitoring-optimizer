@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.stats.MonitoringStats;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.stats.MonitoringStatsManager;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.TxtFileUtil;
 
 import org.optaplanner.core.api.domain.solution.Solution;
@@ -38,9 +39,8 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
 
     @Override
     public Solution read(File inputSolutionFile) {
-        TxtFileUtil.setStaticValues(inputSolutionFile);
-        int kPort = Integer.parseInt(TxtFileUtil.getConfig(inputSolutionFile, TxtFileUtil.TOPOLOGY_KPORT).trim());
-        return new MonitoringBalancingGenerator().createMonitoringBalance(kPort, false);
+        Configs configs = TxtFileUtil.getConfigurations(inputSolutionFile);
+        return new MonitoringBalancingGenerator().createMonitoringBalance(configs, false);
     }
 
     @Override

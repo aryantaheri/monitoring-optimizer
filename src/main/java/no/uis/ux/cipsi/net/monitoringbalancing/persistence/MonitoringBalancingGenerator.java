@@ -14,6 +14,8 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +27,18 @@ public class MonitoringBalancingGenerator {
 
     private static double DEFAULT_FLOW_RATE = Math.pow(10, 8);//100Mbps 10^(2+6)
     public static void main(String[] args) {
-        boolean includeMonitoringHostAsTrafficEndpoint = false;
-        int kPort = 4;
-        new MonitoringBalancingGenerator().createMonitoringBalance(kPort, includeMonitoringHostAsTrafficEndpoint);
+        //        boolean includeMonitoringHostAsTrafficEndpoint = false;
+        //        int kPort = 4;
+        //        new MonitoringBalancingGenerator().createMonitoringBalance(kPort, includeMonitoringHostAsTrafficEndpoint);
     }
 
-    public MonitoringBalance createMonitoringBalance(int kPort, boolean includeMonitoringHostAsTrafficEndpoint) {
-        Graph<Node, WeightedLink> topology = TopologyManager.buildTopology(kPort);
+    public MonitoringBalance createMonitoringBalance(Configs configs, boolean includeMonitoringHostAsTrafficEndpoint) {
+        Graph<Node, WeightedLink> topology = TopologyManager.buildTopology(configs);
         Yen<Node, WeightedLink> algo = TopologyManager.buildShortestPathAlgo(topology);
 
         List<Switch> monitoringSwitches = TopologyManager.getMonitoringSwitches(topology);
         List<MonitoringHost> monitoringHosts = TopologyManager.getMonitoringHosts(topology);
-        List<TrafficFlow> trafficFlows = generateTrafficFlows(topology, algo, includeMonitoringHostAsTrafficEndpoint);
+        List<TrafficFlow> trafficFlows = generateTrafficFlows(topology, algo, configs, includeMonitoringHostAsTrafficEndpoint);
         logger.debug("monitoringSwitches[{}] {}", monitoringSwitches.size(), monitoringSwitches);
         logger.debug("monitoringHosts[{}] {}", monitoringHosts.size(), monitoringHosts);
         logger.debug("flows[{}]", trafficFlows.size());
@@ -51,13 +53,13 @@ public class MonitoringBalancingGenerator {
         return monitoringBalance;
     }
 
-    private List<TrafficFlow> generateTrafficFlows(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, boolean includeMonitoringHostAsTrafficEndpoint) {
+    private List<TrafficFlow> generateTrafficFlows(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Configs configs, boolean includeMonitoringHostAsTrafficEndpoint) {
         List<TrafficFlow> flows = new ArrayList<TrafficFlow>();
+        double rate = Double.valueOf(configs.getConfig(ConfigName.FLOW_RATE));
         List<Host> trafficEndpointHosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
         for (Host srcHost : trafficEndpointHosts) {
             for (Host dstHost : trafficEndpointHosts) {
                 if (srcHost.equals(dstHost)) continue;
-                double rate = DEFAULT_FLOW_RATE;
                 TrafficFlow flow = generateTrafficFlow(topology, algo, srcHost, dstHost, rate);
                 flows.add(flow);
             }

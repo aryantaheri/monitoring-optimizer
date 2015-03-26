@@ -20,21 +20,21 @@ public class Switch extends Node {
     }
 
 
-    public Switch(String id, int fabricCapacity, int forwardingCapacity, double initCost, boolean supportsMirroring, TYPE type) {
-        this.id = id;
-        this.fabricCapacity = fabricCapacity;
-        this.forwardingCapacity = forwardingCapacity;
-        this.initCost = initCost;
-        this.supportsMirroring = supportsMirroring;
-        this.type = type;
-    }
+    //    public Switch(String id, int fabricCapacity, int forwardingCapacity, double initCost, boolean supportsMirroring, TYPE type) {
+    //        this.id = id;
+    //        this.fabricCapacity = fabricCapacity;
+    //        this.forwardingCapacity = forwardingCapacity;
+    //        this.initCost = initCost;
+    //        this.supportsMirroring = supportsMirroring;
+    //        this.type = type;
+    //    }
 
-    public Switch(String id, boolean supportsMirroring, TYPE type) {
+    public Switch(String id, boolean supportsMirroring, TYPE type, double initCost, double perflowReuseCostRatio) {
         this.id = id;
         this.fabricCapacity = DEFAULT_SWITCH_FABRIC_CAPACITY;
         this.forwardingCapacity = DEFAULT_SWITCH_FORWARDING_CAPACITY;
-        this.initCost = DEFAULT_SWITCH_COST;
-        this.perFlowReuseCostRatio = DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO;
+        this.initCost = initCost;
+        this.perFlowReuseCostRatio = perflowReuseCostRatio;
         this.supportsMirroring = supportsMirroring;
         this.type = type;
     }
@@ -64,28 +64,18 @@ public class Switch extends Node {
         return type;
     }
 
-    public static void setDefaultInitCost(double cost){
-        DEFAULT_SWITCH_COST = cost;
-    }
+    //    public static void setDefaultInitCost(double cost){
+    //        DEFAULT_SWITCH_COST = cost;
+    //    }
+    //
+    //    public static double getDefaultInitCost() {
+    //        return DEFAULT_SWITCH_COST;
+    //    }
+    //
+    //    public static void setDefaultPerFlowReuseCostRatio(double ratio) {
+    //        DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO = ratio;
+    //    }
 
-    public static double getDefaultInitCost() {
-        return DEFAULT_SWITCH_COST;
-    }
-
-    public static void setDefaultPerFlowReuseCostRatio(double ratio) {
-        DEFAULT_SWITCH_PERFLOW_REUSE_COST_RATIO = ratio;
-    }
-
-    public String getPropoertiesString() {
-        StringBuilder properties = new StringBuilder();
-        properties.append(toString())
-        .append(" ,fabricCapacity: ").append(fabricCapacity)
-        .append(" ,forwardingCapacity: ").append(forwardingCapacity)
-        .append(" ,initCost: ").append(initCost)
-        .append(" ,perFlowReuseCostRatio: ").append(perFlowReuseCostRatio);
-
-        return properties.toString();
-    }
 
     @Override
     public String toString() {

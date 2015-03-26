@@ -12,6 +12,8 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch.TYPE;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
 
 import org.apache.commons.collections15.Transformer;
 import org.slf4j.Logger;
@@ -25,7 +27,7 @@ import edu.uci.ics.jung.graph.Graph;
 public class TopologyManager {
 
     private static Logger log = LoggerFactory.getLogger(TopologyManager.class);
-    private static final int kPort = 4;
+    //    private static final int kPort = 4;
 
     //    private Graph<Node, WeightedLink> topology;
     //    private Yen<Node, WeightedLink> yenKShortestPathsAlgo;
@@ -76,8 +78,14 @@ public class TopologyManager {
         return yenKShortestPathsAlgo;
     }
 
-    public static Graph<Node, WeightedLink> buildTopology(int kPort) {
+    public static Graph<Node, WeightedLink> buildTopology(Configs configs) {
         Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
+        int kPort = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
+        double podSensitivity = Double.valueOf(configs.getConfig(ConfigName.LINK_COST_POD_SENSITIVITY));
+        double monitoringHostCost = Double.valueOf(configs.getConfig(ConfigName.MONITORING_HOST_COST));
+        double switchInitCost = Double.valueOf(configs.getConfig(ConfigName.SWITCH_INIT_COST));
+        double switchPerFlowReuseCostRatio = Double.valueOf(configs.getConfig(ConfigName.SWITCH_PERFLOW_REUSE_COST_RATIO));
+
 
         int cores = (int) (Math.pow(kPort, 2)/4);
         int aggrs = (int) (Math.pow(kPort, 2)/2);
@@ -91,7 +99,7 @@ public class TopologyManager {
         // Create core switches
         for (int i = 0; i < cores; i++) {
             switches++;
-            coreArray[i] = new Switch("sw"+switches, true, TYPE.CORE);
+            coreArray[i] = new Switch("sw"+switches, true, TYPE.CORE, switchInitCost, switchPerFlowReuseCostRatio);
             topology.addVertex(coreArray[i]);
         }
 
@@ -102,7 +110,7 @@ public class TopologyManager {
             Switch[] podAggrArray = new Switch[kPort/2];
             for (int j = 0; j < kPort/2; j++) {
                 switches++;
-                podAggrArray[j] = new Switch("sw"+switches, true, TYPE.AGGREGATION);
+                podAggrArray[j] = new Switch("sw"+switches, true, TYPE.AGGREGATION, switchInitCost, switchPerFlowReuseCostRatio);
                 topology.addVertex(podAggrArray[j]);
 
                 // Connect Aggr to Cores
@@ -111,31 +119,31 @@ public class TopologyManager {
                 // (j+1)*(k/2): index of last core switch to be connected to this aggr switch
                 for (int k = j*(kPort/2); k < (j+1)*(kPort/2); k++) {
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), podAggrArray[j], coreArray[k]);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), podAggrArray[j], coreArray[k]);
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), coreArray[k], podAggrArray[j]);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), coreArray[k], podAggrArray[j]);
                 }
             }
 
             // Create pod's edges
             for (int j = 0; j < kPort/2; j++) {
                 switches++;
-                Switch edgeSw = new Switch("sw"+switches, true, TYPE.EDGE);
+                Switch edgeSw = new Switch("sw"+switches, true, TYPE.EDGE, switchInitCost, switchPerFlowReuseCostRatio);
                 topology.addVertex(edgeSw);
 
                 boolean monitoringHostCreated = false;
                 // Connect edge to aggrs
                 for (int k = 0; k < kPort/2; k++) {
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), edgeSw, podAggrArray[k]);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), edgeSw, podAggrArray[k]);
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), podAggrArray[k], edgeSw);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), podAggrArray[k], edgeSw);
 
                     // Create and connect a single Host to Edge
                     hosts++;
                     Host host;
                     if (!monitoringHostCreated){
-                        host = new MonitoringHost("host"+hosts);
+                        host = new MonitoringHost("host"+hosts, monitoringHostCost);
                         monitoringHostCreated = true;
                     } else {
                         host = new Host("host"+hosts);
@@ -146,9 +154,9 @@ public class TopologyManager {
                     topology.addVertex(host);
 
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), edgeSw, host);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), edgeSw, host);
                     links++;
-                    topology.addEdge(new WeightedLink("link"+links), host, edgeSw);
+                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), host, edgeSw);
                 }
 
             }
