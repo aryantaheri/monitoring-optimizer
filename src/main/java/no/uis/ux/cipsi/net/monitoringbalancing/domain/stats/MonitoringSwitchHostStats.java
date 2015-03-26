@@ -99,7 +99,10 @@ public class MonitoringSwitchHostStats {
 
     private DescriptiveStatistics getDistanceStats(Switch sw, Set<MonitoringHost> hosts) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
+        if (sw == null) return stats;
+
         for (MonitoringHost host : hosts) {
+            if (host == null) continue;
             List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, sw, host, 4);
             stats.addValue(path.size());
             // TODO: move it to a dedicated method, here for efficiency
@@ -110,7 +113,10 @@ public class MonitoringSwitchHostStats {
 
     private DescriptiveStatistics getDistanceStats(MonitoringHost host, Set<Switch> switches) {
         DescriptiveStatistics stats = new DescriptiveStatistics();
+        if (host == null) return stats;
+
         for (Switch sw : switches) {
+            if (sw == null) continue;
             List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, host, sw, 4);
             stats.addValue(path.size());
         }
