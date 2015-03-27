@@ -1,12 +1,13 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.util;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
-import org.apache.commons.collections15.map.HashedMap;
 
 public class Configs {
 
-    Map<ConfigName, String> configMap = new HashedMap<ConfigName, String>();
+    Map<ConfigName, String> configMap = new TreeMap<ConfigName, String>();
 
     public enum ConfigName {
         COMMENTS("#"),
@@ -28,12 +29,41 @@ public class Configs {
         }
     }
 
+    public Configs() {
+    }
+
+    public Configs(Map<ConfigName, String> configMap) {
+        this.configMap = configMap;
+    }
+
+    public Configs(String k, String swinit, String swreuse, String host, String linkpod, String rate) {
+        configMap.put(ConfigName.TOPOLOGY_KPORT, k);
+        configMap.put(ConfigName.SWITCH_INIT_COST, swinit);
+        configMap.put(ConfigName.SWITCH_PERFLOW_REUSE_COST_RATIO, swreuse);
+        configMap.put(ConfigName.LINK_COST_POD_SENSITIVITY, linkpod);
+        configMap.put(ConfigName.MONITORING_HOST_COST, host);
+        configMap.put(ConfigName.FLOW_RATE, rate);
+
+    }
+
     public void putConfig(ConfigName config, String value) {
         configMap.put(config, value.trim());
     }
 
     public String getConfig(ConfigName config) {
         return configMap.get(config);
+    }
+
+    public Map<ConfigName, String> getConfigMap() {
+        return configMap;
+    }
+
+    public Map<String, String> getConfigMapStrings() {
+        Map<String, String> stringMap = new TreeMap<String, String>();
+        for (Entry<ConfigName, String> entry : configMap.entrySet()) {
+            stringMap.put(entry.getKey().toString(), entry.getValue());
+        }
+        return stringMap;
     }
 
     public static Configs getDefaultConfigs(){
