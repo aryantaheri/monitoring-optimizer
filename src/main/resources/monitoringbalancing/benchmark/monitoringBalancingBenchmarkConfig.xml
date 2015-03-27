@@ -7,8 +7,8 @@
   <inheritedSolverBenchmark>
     <problemBenchmarks>
       <!-- <xStreamAnnotatedClass>no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance</xStreamAnnotatedClass>  -->
-      <!-- 
       <solutionFileIOClass>no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalanceFileIO</solutionFileIOClass>
+      <!-- 
       <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod1-rate100.txt</inputSolutionFile>
       <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod1-rate300.txt</inputSolutionFile>
       <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host1000-linkpod2-rate100.txt</inputSolutionFile>
