@@ -18,14 +18,14 @@
       <inputSolutionFile>data/monitoringbalancing/unsolved/swinit10-swreuse05-host10000-linkpod2-rate100.txt</inputSolutionFile>
        -->
 
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host1000-linkpod0.1-rate100.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host1000-linkpod1-rate100.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host1000-linkpod1-rate150.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host1000-linkpod1-rate300.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host1000-linkpod10-rate100.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host10000-linkpod1-rate100.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host10000-linkpod1-rate150.txt</inputSolutionFile>
-	  <inputSolutionFile>data/monitoringbalancing/unsolved/k48-swinit10-swreuse0.05-host10000-linkpod1-rate300.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host1000-linkpod0.1-rate100.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host1000-linkpod1-rate100.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host1000-linkpod1-rate150.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host1000-linkpod1-rate300.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host1000-linkpod10-rate100.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host10000-linkpod1-rate100.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host10000-linkpod1-rate150.txt</inputSolutionFile>
+	  <inputSolutionFile>data/monitoringbalancing/unsolved/k8-swinit10-swreuse0.05-host10000-linkpod1-rate300.txt</inputSolutionFile>
 
 
       <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
