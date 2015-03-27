@@ -97,7 +97,9 @@ public class MonitoringBalancingGenerator {
 
     private InetAddress getHostAddress(Host host) {
         try {
-            return InetAddress.getByName("1."+host.getPodIndex()+"."+host.getEdgeIndex()+"."+host.getHostIndex());
+            int higher = host.getHostIndex() / 256;
+            int lower = host.getHostIndex() % 256;
+            return InetAddress.getByName(host.getPodIndex()+"."+host.getEdgeIndex()+"."+higher+ "."+lower);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             return null;
