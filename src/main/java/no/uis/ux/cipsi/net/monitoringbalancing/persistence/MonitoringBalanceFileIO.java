@@ -68,10 +68,10 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
     }
 
     private void writeStats(Solution solution, File file) {
-        MonitoringStats stats = MonitoringStatsManager.getStats((MonitoringBalance) solution);
-        log.info("write stats to file {}:\n {}", file, stats);
         PrintWriter writer = null;
         try {
+            MonitoringStats stats = MonitoringStatsManager.getStats((MonitoringBalance) solution);
+            log.info("write stats to file {}:\n {}", file, stats);
             writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             writer.print("\n Solution Cost: ");
             writer.println(solution.getScore());
@@ -94,7 +94,7 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
             writer.println(stats.getFlowStats().getFactsString());
             writer.println(stats.getSwitchHostStats().getLinkFactsString());
             writer.flush();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("writeStats", e);
         } finally {
             if (writer != null) writer.close();
