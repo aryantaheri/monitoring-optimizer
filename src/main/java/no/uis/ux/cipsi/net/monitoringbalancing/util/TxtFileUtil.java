@@ -63,6 +63,13 @@ public class TxtFileUtil {
 
                 } else if (line.startsWith(ConfigName.TOPOLOGY_KPORT.getName())){
                     configs.putConfig(ConfigName.TOPOLOGY_KPORT, value);
+
+                } else if (line.startsWith(ConfigName.FLOW_INTER_POD_PROB.getName())){
+                    configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, value);
+                } else if (line.startsWith(ConfigName.FLOW_INTRA_POD_PROB.getName())){
+                    configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, value);
+                } else if (line.startsWith(ConfigName.FLOW_INTRA_EDGE_PROB.getName())){
+                    configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, value);
                 }
 
             }
