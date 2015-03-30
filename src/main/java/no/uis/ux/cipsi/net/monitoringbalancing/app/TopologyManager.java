@@ -27,6 +27,7 @@ import edu.uci.ics.jung.graph.Graph;
 public class TopologyManager {
 
     private static Logger log = LoggerFactory.getLogger(TopologyManager.class);
+    private static Random random = new Random();
     //    private static final int kPort = 4;
 
     //    private Graph<Node, WeightedLink> topology;
@@ -52,14 +53,24 @@ public class TopologyManager {
 
 
     public static List<WeightedLink> getRandomShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
-        //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
+        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
         List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
         if (paths.size() < k){
             log.trace("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than K {}. Choosing #AvailablePaths {}", src, dst, paths.size(), k, Math.min(paths.size(), k));
         }
-        Random random = new Random();
         int randomIndex = random.nextInt(Math.min(paths.size(), k));
         return paths.get(randomIndex);
+    }
+
+
+    public static List<WeightedLink> getShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst){
+        //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
+        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, 1);
+        if (paths.size() < 1){
+            log.error("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than 1. returning", src, dst, paths.size());
+            return null;
+        }
+        return paths.get(0);
     }
 
     public static List<List<WeightedLink>> getKShortestPaths(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
