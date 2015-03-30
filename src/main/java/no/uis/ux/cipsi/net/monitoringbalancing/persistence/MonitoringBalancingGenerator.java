@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
@@ -65,6 +66,7 @@ public class MonitoringBalancingGenerator {
         for (Host srcHost : trafficEndpointHosts) {
             for (Host dstHost : trafficEndpointHosts) {
                 if (srcHost.equals(dstHost)) continue;
+                if (!shouldGenerate(srcHost, dstHost, configs)) continue;
                 TrafficFlow flow = generateTrafficFlow(topology, algo, srcHost, dstHost, rate);
                 tempId++;
                 logger.debug("generateTrafficFlows: id={} flow={}", tempId, flow);
@@ -90,6 +92,31 @@ public class MonitoringBalancingGenerator {
         return flow;
     }
 
+    private static Random random = new Random();
+    private boolean shouldGenerate(Host srcHost, Host dstHost, Configs configs) {
+        boolean generate = false;
+        double p = random.nextDouble();
+        if (srcHost.getPodIndex() == dstHost.getPodIndex()) {
+
+            if (srcHost.getEdgeIndex() == dstHost.getEdgeIndex()) {
+                // same edge
+                if (p < Double.valueOf(configs.getConfig(ConfigName.FLOW_INTRA_EDGE_PROB))){
+                    generate = true;
+                }
+            } else {
+                // same pod different edge
+                if (p < Double.valueOf(configs.getConfig(ConfigName.FLOW_INTRA_POD_PROB))){
+                    generate = true;
+                }
+            }
+        } else {
+            // different pods
+            if (p < Double.valueOf(configs.getConfig(ConfigName.FLOW_INTER_POD_PROB))){
+                generate = true;
+            }
+        }
+        return generate;
+    }
     private int getShortestPathsLimit(Host src, Host dst) {
         if (src.getPodIndex() == dst.getPodIndex()) {
             if (src.getEdgeIndex() == dst.getEdgeIndex()){
