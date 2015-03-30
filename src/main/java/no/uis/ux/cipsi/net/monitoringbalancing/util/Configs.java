@@ -76,4 +76,8 @@ public class Configs {
         configs.putConfig(ConfigName.FLOW_RATE, "100000000");
         return configs;
     }
+    @Override
+    public String toString() {
+        return configMap.toString();
+    }
 }
