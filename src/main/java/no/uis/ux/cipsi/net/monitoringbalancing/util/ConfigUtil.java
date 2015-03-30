@@ -65,16 +65,16 @@ public class ConfigUtil {
     private static ArrayList<Configs> getInputConfigs(){
         ArrayList<Configs> inputConfigs = new ArrayList<Configs>();
         //                               "K",    "swinit",   "swreuse",  "host",     "linkpod,   "rate"
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "100"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "150"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "300"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "150000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "300000000", "0.001", "0.01", "0.1"));
 
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "100"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "150"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "300"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "150000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "300000000", "0.001", "0.01", "0.1"));
 
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "10",        "100"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "0.1",        "100"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "10",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "0.1",        "100000000", "0.001", "0.01", "0.1"));
         return inputConfigs;
     }
 }
