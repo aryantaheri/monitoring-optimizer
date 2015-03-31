@@ -19,8 +19,8 @@ import org.apache.commons.collections15.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 
 
 
@@ -77,6 +77,7 @@ public class TopologyManager {
     public static List<List<WeightedLink>> getKShortestPaths(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
         List<List<WeightedLink>> cachedPaths = AlgoCache.getPaths(yenKShortestPathsAlgo, src, dst);
         if (cachedPaths != null && cachedPaths.size() >= k) {
+            log.debug("getKShortestPaths cache hit");
             return cachedPaths.subList(0, k);
         }
         List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
@@ -96,7 +97,8 @@ public class TopologyManager {
     }
 
     public static Graph<Node, WeightedLink> buildTopology(Configs configs) {
-        Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
+        //        Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
+        Graph<Node, WeightedLink> topology = new UndirectedSparseGraph<Node, WeightedLink>();
         int kPort = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
         double podSensitivity = Double.valueOf(configs.getConfig(ConfigName.LINK_COST_POD_SENSITIVITY));
         double monitoringHostCost = Double.valueOf(configs.getConfig(ConfigName.MONITORING_HOST_COST));
