@@ -79,7 +79,6 @@ public class MonitoringBalancingGenerator {
                 if (srcHost.equals(dstHost)) continue;
                 if (!shouldGenerate(srcHost, dstHost, configs)) {
                     shouldNot++;
-                    logger.debug("generateTrafficFlows: not generated should={} shouldNot={}", should, shouldNot);
                     continue;
                 }
                 should++;
@@ -89,6 +88,7 @@ public class MonitoringBalancingGenerator {
                 flows.add(flow);
             }
         }
+        logger.debug("generateTrafficFlows: generated-flows={} not-generated-flows={}", should, shouldNot);
         return flows;
     }
 
