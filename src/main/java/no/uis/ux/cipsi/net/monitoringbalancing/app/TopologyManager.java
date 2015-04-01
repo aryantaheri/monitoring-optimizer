@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
+import no.uis.ux.cipsi.net.monitoringbalancing.app.algorithm.YenNoCache;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Host;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
@@ -86,7 +87,7 @@ public class TopologyManager {
     }
 
     public static Yen<Node,WeightedLink> buildShortestPathAlgo(Graph<Node, WeightedLink> topology) {
-        Yen<Node, WeightedLink> yenKShortestPathsAlgo = new Yen<Node, WeightedLink>(
+        YenNoCache<Node, WeightedLink> yenKShortestPathsAlgo = new YenNoCache<Node, WeightedLink>(
                 topology, new Transformer<WeightedLink, Number>() {
                     @Override
                     public Number transform(WeightedLink link) {
