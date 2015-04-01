@@ -31,8 +31,17 @@ public class MonitoringBalancingGenerator {
         boolean includeMonitoringHostAsTrafficEndpoint = false;
         //        int kPort = 4;
         Configs cnf = Configs.getDefaultConfigs();
-        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+48);
-        new MonitoringBalancingGenerator().createMonitoringBalance(cnf, includeMonitoringHostAsTrafficEndpoint);
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+8);
+        MonitoringBalance balance = new MonitoringBalancingGenerator().createMonitoringBalance(cnf, includeMonitoringHostAsTrafficEndpoint);
+        Graph<Node, WeightedLink> topo = balance.getTopology();
+        Node n1 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[0];
+        Node n2 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[1];
+        logger.debug("n1={}", n1);
+        logger.debug("n2={}", n2);
+        List<List<WeightedLink>> paths = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
+        logger.debug("paths={}", paths);
+        List<List<WeightedLink>> paths2 = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
+        logger.debug("paths={}", paths2);
     }
 
     public MonitoringBalance createMonitoringBalance(Configs configs, boolean includeMonitoringHostAsTrafficEndpoint) {
@@ -63,13 +72,20 @@ public class MonitoringBalancingGenerator {
         double rate = Double.valueOf(configs.getConfig(ConfigName.FLOW_RATE));
         List<Host> trafficEndpointHosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
         int tempId = 0;
+        int should = 0;
+        int shouldNot = 0;
         for (Host srcHost : trafficEndpointHosts) {
             for (Host dstHost : trafficEndpointHosts) {
                 if (srcHost.equals(dstHost)) continue;
-                if (!shouldGenerate(srcHost, dstHost, configs)) continue;
+                if (!shouldGenerate(srcHost, dstHost, configs)) {
+                    shouldNot++;
+                    logger.debug("generateTrafficFlows: not generated should={} shouldNot={}", should, shouldNot);
+                    continue;
+                }
+                should++;
                 TrafficFlow flow = generateTrafficFlow(topology, algo, srcHost, dstHost, rate);
                 tempId++;
-                logger.debug("generateTrafficFlows: id={} flow={}", tempId, flow);
+                logger.debug("generateTrafficFlows: generated={} notGenerated={} id={} flow={}", should, shouldNot, tempId, flow);
                 flows.add(flow);
             }
         }
@@ -77,10 +93,10 @@ public class MonitoringBalancingGenerator {
     }
 
     private TrafficFlow generateTrafficFlow(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Host srcHost, Host dstHost, double rate) {
-        //        int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
         // FIXME This is not good, but #=4 makes it too slow for k=48.
         // Store paths and lookup them.
         int shortestPathsNum = 1;
+        //        int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
         List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, srcHost, dstHost, shortestPathsNum);
         //        List<WeightedLink> path = TopologyManager.getShortestPath(algo, srcHost, dstHost);
         List<Switch> onPathMonitoringSwitches = TopologyManager.getSwitchesOnPath(topology, path);
