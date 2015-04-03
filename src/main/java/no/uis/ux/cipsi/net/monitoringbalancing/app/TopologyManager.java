@@ -20,8 +20,8 @@ import org.apache.commons.collections15.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 
 
 
@@ -99,7 +99,7 @@ public class TopologyManager {
 
     public static Graph<Node, WeightedLink> buildTopology(Configs configs) {
         //        Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
-        Graph<Node, WeightedLink> topology = new UndirectedSparseGraph<Node, WeightedLink>();
+        Graph<Node, WeightedLink> topology = new DirectedSparseGraph<Node, WeightedLink>();
         int kPort = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
         double podSensitivity = Double.valueOf(configs.getConfig(ConfigName.LINK_COST_POD_SENSITIVITY));
         double monitoringHostCost = Double.valueOf(configs.getConfig(ConfigName.MONITORING_HOST_COST));

@@ -137,7 +137,7 @@ public class TrafficFlow implements Serializable{
     public String toString() {
         String val = srcNode + "(" + srcIp + ":" + srcPort + ")" + "->" +
                 dstNode + "(" + dstIp + ":" + dstPort + ") [Proto: " +
-                protocol + ", pathSize: " + path.size() + ", Rate: " + rate + "]";
+                protocol + ", pathSize: " + path.size() + ", Rate: " + rate + ", #OnPathSW: "+ onPathMonitoringSwitches.size() + "]";
         return val;
     }
 
