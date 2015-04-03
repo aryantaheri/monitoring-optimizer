@@ -55,7 +55,7 @@ public class TopologyManager {
 
 
     public static List<WeightedLink> getRandomShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
-        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
+        //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
         List<List<WeightedLink>> paths = getKShortestPaths(yenKShortestPathsAlgo, src, dst, k);
         if (paths.size() < k){
             log.trace("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than K {}. Choosing #AvailablePaths {}", src, dst, paths.size(), k, Math.min(paths.size(), k));
