@@ -78,7 +78,7 @@ public class TopologyManager {
     public static List<List<WeightedLink>> getKShortestPaths(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
         List<List<WeightedLink>> cachedPaths = AlgoCache.getPaths(yenKShortestPathsAlgo, src, dst);
         if (cachedPaths != null && cachedPaths.size() >= k) {
-            log.debug("getKShortestPaths cache hit");
+            log.trace("getKShortestPaths cache hit");
             return cachedPaths.subList(0, k);
         }
         List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
