@@ -31,17 +31,58 @@ public class MonitoringBalancingGenerator {
         boolean includeMonitoringHostAsTrafficEndpoint = false;
         //        int kPort = 4;
         Configs cnf = Configs.getDefaultConfigs();
-        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+8);
-        MonitoringBalance balance = new MonitoringBalancingGenerator().createMonitoringBalance(cnf, includeMonitoringHostAsTrafficEndpoint);
-        Graph<Node, WeightedLink> topo = balance.getTopology();
-        Node n1 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[0];
-        Node n2 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[1];
-        logger.debug("n1={}", n1);
-        logger.debug("n2={}", n2);
-        List<List<WeightedLink>> paths = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
-        logger.debug("paths={}", paths);
-        List<List<WeightedLink>> paths2 = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
-        logger.debug("paths={}", paths2);
+        cnf.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.001");
+        cnf.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
+        cnf.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.1");
+        String[] ks = {"4","8","16","24", "32", "48", "64"};
+        MonitoringBalancingGenerator generator = new MonitoringBalancingGenerator();
+        for (String k : ks) {
+            cnf.putConfig(ConfigName.TOPOLOGY_KPORT, k);
+            estimateTrafficFlows(cnf, includeMonitoringHostAsTrafficEndpoint);
+            System.out.println("--------------------------");
+        }
+        //        MonitoringBalance balance = generator.createMonitoringBalance(cnf, includeMonitoringHostAsTrafficEndpoint);
+        //        Node n1 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[0];
+        //        Node n2 = topo.getVertices().toArray(new Node[topo.getVertices().size()])[1];
+        //        logger.debug("n1={}", n1);
+        //        logger.debug("n2={}", n2);
+        //        List<List<WeightedLink>> paths = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
+        //        logger.debug("paths={}", paths);
+        //        List<List<WeightedLink>> paths2 = TopologyManager.getKShortestPaths(balance.getAlgo(), n1, n2, 4);
+        //        logger.debug("paths={}", paths2);
+    }
+
+    private static void estimateTrafficFlows(Configs configs, boolean includeMonitoringHostAsTrafficEndpoint) {
+        Graph<Node, WeightedLink> topology = TopologyManager.buildTopology(configs);
+        logger.debug("createMonitoringBalance: topology #vertices={} #edges={}", topology.getVertexCount(), topology.getEdgeCount());
+        Yen<Node, WeightedLink> algo = TopologyManager.buildShortestPathAlgo(topology);
+
+        List<Switch> monitoringSwitches = TopologyManager.getMonitoringSwitches(topology);
+        List<MonitoringHost> monitoringHosts = TopologyManager.getMonitoringHosts(topology);
+        List<Host> hosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
+        //        logger.debug("monitoringSwitches[{}] {}", monitoringSwitches.size(), monitoringSwitches);
+        //        logger.debug("monitoringHosts[{}] {}", monitoringHosts.size(), monitoringHosts);
+        //        logger.debug("Hosts[{}] {}", hosts.size(), hosts);
+
+        double rate = Double.valueOf(configs.getConfig(ConfigName.FLOW_RATE));
+        List<Host> trafficEndpointHosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
+        int tempId = 0;
+        int should = 0;
+        int shouldNot = 0;
+        for (Host srcHost : trafficEndpointHosts) {
+            for (Host dstHost : trafficEndpointHosts) {
+                if (srcHost.equals(dstHost)) continue;
+                if (!shouldGenerate(srcHost, dstHost, configs)) {
+                    shouldNot++;
+                    continue;
+                }
+                should++;
+                tempId++;
+                //                logger.debug("estimateTrafficFlows: generated={} notGenerated={} id={} src={} dst={}", should, shouldNot, tempId, srcHost, dstHost);
+            }
+        }
+        logger.debug("estimateTrafficFlows: configs={} ", configs);
+        logger.debug("host={} monHost={} sw={} generated-flows={} not-generated-flows={}", hosts.size(), monitoringHosts.size(), monitoringSwitches.size(), should, shouldNot);
     }
 
     public MonitoringBalance createMonitoringBalance(Configs configs, boolean includeMonitoringHostAsTrafficEndpoint) {
@@ -109,7 +150,7 @@ public class MonitoringBalancingGenerator {
     }
 
     private static Random random = new Random();
-    private boolean shouldGenerate(Host srcHost, Host dstHost, Configs configs) {
+    private static boolean shouldGenerate(Host srcHost, Host dstHost, Configs configs) {
         boolean generate = false;
         double p = random.nextDouble();
         if (srcHost.getPodIndex() == dstHost.getPodIndex()) {
