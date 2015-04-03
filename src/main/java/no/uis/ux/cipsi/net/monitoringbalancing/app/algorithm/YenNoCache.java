@@ -12,8 +12,12 @@ public class YenNoCache<V, E> extends Yen<V, E>{
             Transformer<E, Number> nev) {
         super(graph, nev);
         dijkstra.enableCaching(false);
-        dijkstra.setMaxTargets(8);
-        //        dijkstra.setMaxDistance(8);
+//        dijkstra.setMaxTargets(8);
+        dijkstra.setMaxDistance(8);
     }
-
+    
+    public Graph<V,E> getGraph() {
+    	return graph;
+	}
+    
 }
