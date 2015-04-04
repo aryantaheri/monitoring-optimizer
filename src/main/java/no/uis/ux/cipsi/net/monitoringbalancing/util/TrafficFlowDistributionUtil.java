@@ -20,7 +20,8 @@ public class TrafficFlowDistributionUtil {
     }
 
     private static String getDistributionString(Configs cnf) {
-        String distString = cnf.getConfig(ConfigName.FLOW_INTER_POD_PROB) + "-" +
+        String distString = cnf.getConfig(ConfigName.TOPOLOGY_KPORT) + "-" +
+                cnf.getConfig(ConfigName.FLOW_INTER_POD_PROB) + "-" +
                 cnf.getConfig(ConfigName.FLOW_INTRA_POD_PROB) + "-" +
                 cnf.getConfig(ConfigName.FLOW_INTRA_EDGE_PROB);
         return distString;
