@@ -141,8 +141,8 @@ public class MonitoringBalancingGenerator {
     private TrafficFlow generateTrafficFlow(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Host srcHost, Host dstHost, double rate) {
         // FIXME This is not good, but #=4 makes it too slow for k=48.
         // Store paths and lookup them.
-        int shortestPathsNum = 1;
-        //        int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
+        //        int shortestPathsNum = 1;
+        int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
         List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, srcHost, dstHost, shortestPathsNum);
         //        List<WeightedLink> path = TopologyManager.getShortestPath(algo, srcHost, dstHost);
         List<Switch> onPathMonitoringSwitches = TopologyManager.getSwitchesOnPath(topology, path);
