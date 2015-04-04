@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeMap;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
@@ -26,10 +27,10 @@ import edu.uci.ics.jung.graph.Graph;
 public class MonitoringBalancingGenerator {
     private static Logger logger = LoggerFactory.getLogger(MonitoringBalancingGenerator.class);
 
-    private static double DEFAULT_FLOW_RATE = Math.pow(10, 8);//100Mbps 10^(2+6)
+    private static TreeMap<Host, List<Host>> trafficFlowDistribution = new TreeMap<Host, List<Host>>();
+
     public static void main(String[] args) {
         boolean includeMonitoringHostAsTrafficEndpoint = false;
-        //        int kPort = 4;
         Configs cnf = Configs.getDefaultConfigs();
         cnf.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.001");
         cnf.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
@@ -200,7 +201,4 @@ public class MonitoringBalancingGenerator {
         }
     }
 
-    public static void setDefaultFlowRate(double rate) {
-        DEFAULT_FLOW_RATE = rate;
-    }
 }
