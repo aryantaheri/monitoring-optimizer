@@ -18,6 +18,7 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.TrafficFlowDistributionUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,9 @@ public class MonitoringBalancingGenerator {
         List<Switch> monitoringSwitches = TopologyManager.getMonitoringSwitches(topology);
         List<MonitoringHost> monitoringHosts = TopologyManager.getMonitoringHosts(topology);
         List<TrafficFlow> trafficFlows = generateTrafficFlows(topology, algo, configs, includeMonitoringHostAsTrafficEndpoint);
+        if (!TrafficFlowDistributionUtil.distributionExists(configs)){
+            TrafficFlowDistributionUtil.addFlows(configs, trafficFlows);
+        }
         logger.debug("monitoringSwitches[{}] {}", monitoringSwitches.size(), monitoringSwitches);
         logger.debug("monitoringHosts[{}] {}", monitoringHosts.size(), monitoringHosts);
         logger.debug("flows[{}]", trafficFlows.size());
@@ -152,6 +156,9 @@ public class MonitoringBalancingGenerator {
 
     private static Random random = new Random();
     private static boolean shouldGenerate(Host srcHost, Host dstHost, Configs configs) {
+        Boolean exist = TrafficFlowDistributionUtil.flowExists(srcHost, dstHost, configs);
+        if (exist != null) return exist;
+
         boolean generate = false;
         double p = random.nextDouble();
         if (srcHost.getPodIndex() == dstHost.getPodIndex()) {
@@ -175,6 +182,7 @@ public class MonitoringBalancingGenerator {
         }
         return generate;
     }
+
     private int getShortestPathsLimit(Host src, Host dst) {
         if (src.getPodIndex() == dst.getPodIndex()) {
             if (src.getEdgeIndex() == dst.getEdgeIndex()){
