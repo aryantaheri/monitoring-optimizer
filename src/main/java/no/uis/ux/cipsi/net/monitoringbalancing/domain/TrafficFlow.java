@@ -32,6 +32,7 @@ public class TrafficFlow implements Serializable{
 
 
     private List<WeightedLink> path;
+    private List<WeightedLink> monitoringSwitchHostPath;
 
     private Switch monitoringSwitch;
     private MonitoringHost monitoringHost;
@@ -131,6 +132,13 @@ public class TrafficFlow implements Serializable{
     }
     public void setMonitoringHost(MonitoringHost monitoringHost) {
         this.monitoringHost = monitoringHost;
+    }
+
+    public void setMonitoringSwitchHostPath(List<WeightedLink> monitoringSwitchHostPath) {
+        this.monitoringSwitchHostPath = monitoringSwitchHostPath;
+    }
+    public List<WeightedLink> getMonitoringSwitchHostPath() {
+        return monitoringSwitchHostPath;
     }
 
     @Override

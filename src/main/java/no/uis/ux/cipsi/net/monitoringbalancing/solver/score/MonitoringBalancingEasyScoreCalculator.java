@@ -123,6 +123,8 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
         }
         //        log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
         List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
+        trafficFlow.setMonitoringSwitchHostPath(path);
+
         calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD);
         calculateTrafficFlowSwitchUsage(trafficFlow, path);
         calculateTrafficFlowHostUsage(trafficFlow, path);
