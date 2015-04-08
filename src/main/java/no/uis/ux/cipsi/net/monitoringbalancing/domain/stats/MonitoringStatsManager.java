@@ -39,7 +39,7 @@ public class MonitoringStatsManager {
         MonitoringSwitchHostStats switchHostStats = getMonitoringSwitchHostStats(monitoringSolution.getAlgo(), flows);
         TrafficFlowStats flowStats = new TrafficFlowStats(flows);
 
-        MonitoringStats stats = new MonitoringStats(switchStats, hostStats, switchHostStats, flowStats);
+        MonitoringStats stats = new MonitoringStats(monitoringSolution.getScore(), switchStats, hostStats, switchHostStats, flowStats);
         return stats;
     }
 

@@ -30,13 +30,14 @@ public class MonitoringHostStats {
         }
     }
 
-    private void getMonitoringHostNum() {
-        monitoringHostUsage.size();
+    public int getMonitoringHostNum() {
+        return monitoringHostUsage.size();
     }
 
     private Integer getHostUsage(MonitoringHost host) {
         return monitoringHostUsage.get(host);
     }
+
 
     public String getFactsString(){
         StringBuilder builder = new StringBuilder();

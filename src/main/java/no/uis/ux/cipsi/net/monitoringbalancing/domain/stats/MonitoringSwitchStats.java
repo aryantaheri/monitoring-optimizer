@@ -42,13 +42,11 @@ public class MonitoringSwitchStats {
         this.aggrSwMonNum = getSwitchCountInLayer(TYPE.AGGREGATION);
         this.edgeSwMonNum = getSwitchCountInLayer(TYPE.EDGE);
 
-        this.coreSwMonReuse = getSwitchLayerUsage(TYPE.CORE);
-        this.aggrSwMonReuse = getSwitchLayerUsage(TYPE.AGGREGATION);
-        this.edgeSwMonReuse = getSwitchLayerUsage(TYPE.EDGE);
+        this.coreSwMonReuse = getSwitchReuseInLayer(TYPE.CORE);
+        this.aggrSwMonReuse = getSwitchReuseInLayer(TYPE.AGGREGATION);
+        this.edgeSwMonReuse = getSwitchReuseInLayer(TYPE.EDGE);
 
         this.monitoringSwitchesNum = monitoringSwitchUsage.size();
-        System.out.println(monitoringSwitchUsage);
-        System.out.println(this.monitoringSwitchUsage);
         initStats();
     }
 
@@ -69,7 +67,11 @@ public class MonitoringSwitchStats {
         return perFlowReuseCostRatioStats;
     }
 
-    private int getSwitchCountInLayer(TYPE type) {
+    public int getMonitoringSwitchesNum() {
+        return monitoringSwitchesNum;
+    }
+
+    public int getSwitchCountInLayer(TYPE type) {
         int layerSw = 0;
         for (Entry<Switch, Integer> swEntry : monitoringSwitchUsage.entrySet()) {
             if (swEntry.getKey().getType() == type){
@@ -79,7 +81,7 @@ public class MonitoringSwitchStats {
         return layerSw;
     }
 
-    private int getSwitchLayerUsage(TYPE type) {
+    public int getSwitchReuseInLayer(TYPE type) {
         int layerReuse = 0;
         for (Entry<Switch, Integer> swEntry : monitoringSwitchUsage.entrySet()) {
             if (swEntry.getKey().getType() == type){

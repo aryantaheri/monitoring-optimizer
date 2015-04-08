@@ -2,9 +2,11 @@ package no.uis.ux.cipsi.net.monitoringbalancing.persistence;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
@@ -101,4 +103,22 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
         }
     }
 
+    public static MonitoringStats readStats(File solutionOutputObj){
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(solutionOutputObj));
+            MonitoringBalance solution = (MonitoringBalance) ois.readObject();
+            MonitoringStats stats = MonitoringStatsManager.getStats(solution);
+            return stats;
+        } catch (Exception e) {
+            log.error("readStatsObject", e);
+        } finally {
+            try {
+                if (ois != null) ois.close();
+            } catch (IOException e) {
+                log.error("readStatsObject", e);
+            }
+        }
+        return null;
+    }
 }
