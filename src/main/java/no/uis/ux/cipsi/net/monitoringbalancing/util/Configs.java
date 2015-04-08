@@ -89,4 +89,13 @@ public class Configs {
     public String toString() {
         return configMap.toString();
     }
+
+    public static Map<String, String> getWildCardMapStrings() {
+        Configs cnf = getDefaultConfigs();
+        Map<String, String> stringMap = new TreeMap<String, String>();
+        for (Entry<ConfigName, String> entry : cnf.getConfigMap().entrySet()) {
+            stringMap.put(entry.getKey().toString(), "*");
+        }
+        return stringMap;
+    }
 }

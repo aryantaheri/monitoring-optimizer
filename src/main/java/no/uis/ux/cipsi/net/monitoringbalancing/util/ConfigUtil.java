@@ -19,6 +19,13 @@ public class ConfigUtil {
         generateConfigFiles("data/monitoringbalancing/unsolved/");
 
     }
+
+    public static String getOutPutSolutionWildCard() {
+        StrSubstitutor sub = new StrSubstitutor(Configs.getWildCardMapStrings());
+        String wildCardDirs = sub.replace(fileNameTemplate);
+        return wildCardDirs.split("\\.")[0];
+    }
+
     public static void generateConfigFiles(String dir) {
         ArrayList<Configs> inputs = getInputConfigs();
         for (Configs configs : inputs) {
@@ -49,32 +56,19 @@ public class ConfigUtil {
         }
     }
 
-    //    private static ArrayList<String[]> getInputs(){
-    //        ArrayList<String[]> inputs = new ArrayList<String[]>();
-    //
-    //        //inputs.add(new String[]{  "K",    "swinit",   "swreuse",  "host",     "linkpod,   "rate"});
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "1000",     "1",        "100"});
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "1000",     "1",        "150"});
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "1000",     "1",        "300"});
-    //
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "10000",     "1",        "100"});
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "10000",     "1",        "150"});
-    //        inputs.add(new String[]{    "48",   "10",       "0.05",     "10000",     "1",        "300"});
-    //        return inputs;
-    //    }
     private static ArrayList<Configs> getInputConfigs(){
         ArrayList<Configs> inputConfigs = new ArrayList<Configs>();
         //                               "K",    "swinit",   "swreuse",  "host",     "linkpod,   "rate"
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "100000000", "0.001", "0.01", "0.1"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "150000000", "0.001", "0.01", "0.1"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "1",        "300000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "1000",     "1",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "1000",     "1",        "150000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "1000",     "1",        "300000000", "0.001", "0.01", "0.1"));
 
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "100000000", "0.001", "0.01", "0.1"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "150000000", "0.001", "0.01", "0.1"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "10000",     "1",        "300000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "10000",     "1",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "10000",     "1",        "150000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "10000",     "1",        "300000000", "0.001", "0.01", "0.1"));
 
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "10",        "100000000", "0.001", "0.01", "0.1"));
-        inputConfigs.add(new Configs(    "48",   "10",       "0.05",     "1000",     "0.1",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "1000",     "10",        "100000000", "0.001", "0.01", "0.1"));
+        inputConfigs.add(new Configs(    "8",   "10",       "0.05",     "1000",     "0.1",        "100000000", "0.001", "0.01", "0.1"));
         return inputConfigs;
     }
 }
