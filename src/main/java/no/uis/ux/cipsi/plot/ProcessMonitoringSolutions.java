@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch.TYPE;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.stats.MonitoringStats;
 import no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalanceFileIO;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.ConfigUtil;
@@ -20,6 +21,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.dataset.Point;
 
 
@@ -29,6 +31,20 @@ public class ProcessMonitoringSolutions {
     private static Map<String, Map<String, MonitoringStats>> statsMap = new TreeMap<String, Map<String,MonitoringStats>>();
 
     private static Map<String, List<Point<Number>>> swCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swEdgeCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swAggrCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swCoreCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swEdgeReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swAggrReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> swCoreReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
+    private static Map<String, List<Point<Number>>> swReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
+    private static Map<String, List<Point<Number>>> hostCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> hostReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
+    private static Map<String, List<Point<Number>>> solutionHardCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> solutionSoftCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
 
     private static final double BOX_WIDTH = 0.15;
 
@@ -81,15 +97,69 @@ public class ProcessMonitoringSolutions {
             for (Entry<String, MonitoringStats> lsSolutionEntry : inputSolutionEntry.getValue().entrySet()) {
                 double xOffset = getXOffset(lsSolutionEntry.getKey());
 
-                int swNum = lsSolutionEntry.getValue().getSwitchStats().getMonitoringSwitchesNum();
-                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, swNum, swCountDataPointMap);
+                MonitoringStats stats = lsSolutionEntry.getValue();
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getMonitoringSwitchesNum(), swCountDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchCountInLayer(TYPE.EDGE), swEdgeCountDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchCountInLayer(TYPE.AGGREGATION), swAggrCountDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchCountInLayer(TYPE.CORE), swCoreCountDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchReuseInLayer(TYPE.EDGE), swEdgeReuseDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchReuseInLayer(TYPE.AGGREGATION), swAggrReuseDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchReuseInLayer(TYPE.CORE), swCoreReuseDataPointMap);
+
+                PlotUtils.addDataPointsWithMinMax(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchReuseStats(), swReuseDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getHostStats().getMonitoringHostNum(), hostCountDataPointMap);
+                PlotUtils.addDataPointsWithMinMax(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getHostStats().getReuseStats(), hostReuseDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getHardScore().doubleValue(), solutionHardCostDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getSoftScore().doubleValue(), solutionSoftCostDataPointMap);
             }
         }
 
     }
 
     private static void plotDataSets(String plotDir) {
-        Plotter.plotBox(plotDir, "prefix", "MonSw.eps", "Number of Switches", "Inputs\\n" + getXTicLabels()+ "" , "#MonSw", swCountDataPointMap);
+        List<JavaPlot> plots = new ArrayList<JavaPlot>();
+        JavaPlot plot = null;
+        plot = Plotter.plotBox(plotDir, "", "SoftCost.eps", "Soft Cost", "Inputs\\n" + getXTicLabels(), "",  "Soft Cost", "", solutionSoftCostDataPointMap, JavaPlot.Key.BOTTOM_LEFT);
+        plots.add(plot);
+        plot = Plotter.plotBox(plotDir, "", "HardCost.eps", "Hard Cost", "Inputs\\n" + getXTicLabels(), "",  "Hard Cost", "", solutionHardCostDataPointMap, JavaPlot.Key.BOTTOM_LEFT);
+        plots.add(plot);
+        plot = Plotter.plotBox(plotDir, "", "MonSw.eps", "Number of Switches", "Inputs\\n" + getXTicLabels(), "",  "#MonSw", "", swCountDataPointMap, JavaPlot.Key.TOP_RIGHT);
+        plots.add(plot);
+        plot = Plotter.plotBox(plotDir, "", "MonHost.eps", "Number of Hosts", "Inputs\\n" + getXTicLabels(), "",  "#MonHost", "", hostCountDataPointMap, JavaPlot.Key.TOP_RIGHT);
+        plots.add(plot);
+
+        plot = Plotter.plotBoxWithOverLappingPoints(plotDir, "",
+                "MonSwLayerCount.eps", "Monitoring Switches And Network Layer Distribution", "Inputs\\n"
+                        + getXTicLabels(), "", "#MonSw", "Edge", "Aggregation",
+                        "Core", "", swCountDataPointMap, swEdgeCountDataPointMap,
+                        swAggrCountDataPointMap, swCoreCountDataPointMap,
+                        JavaPlot.Key.TOP_RIGHT);
+
+        plots.add(plot);
+
+        plot = Plotter.plotBoxWithOverLappingPointsOnY2(plotDir, "",
+                "MonSwLayerReuse.eps", "Monitoring Switches and Total Switch Resuse in Layers", "Inputs\\n"
+                        + getXTicLabels(), "", "#MonSw", "Total Switch Reuse in Layer", "Edge", "Aggregation",
+                        "Core", "", swCountDataPointMap, swEdgeReuseDataPointMap,
+                        swAggrReuseDataPointMap, swCoreReuseDataPointMap,
+                        JavaPlot.Key.TOP_RIGHT);
+
+        plots.add(plot);
+
+        plot = Plotter.plotBoxWithMinMax(plotDir, "", "MonSwReuse.eps", "Monitoring Switch Reuse Stats", "Inputs\\n"
+                + getXTicLabels(), "#Reuse", swReuseDataPointMap);
+        plots.add(plot);
+
+        plot = Plotter.plotBoxWithMinMax(plotDir, "", "MonHostReuse.eps", "Monitoring Host Reuse Stats", "Inputs\\n"
+                + getXTicLabels(), "#Reuse", hostReuseDataPointMap);
+        plots.add(plot);
+
+
+        Plotter.plotMultipleBoxPlots(plotDir, "", "all.eps", getXTicLabels(), plots);
     }
 
     // TODO: Make it once and reuse it
@@ -118,9 +188,19 @@ public class ProcessMonitoringSolutions {
         ArrayList<String> inputs = new ArrayList<String>(statsMap.keySet());
         Collections.sort(inputs);
         for (int i = 0; i < inputs.size(); i++) {
-            xtics.append(i).append(" - ").append(inputs.get(i)).append("");
+            xtics.append(i).append(" - ").append(inputs.get(i)).append("\\n");
         }
 
         return xtics.toString();
+    }
+
+    private static String getXTicLabelsInGnuPlot() {
+        StringBuilder xtics = new StringBuilder();
+        ArrayList<String> inputs = new ArrayList<String>(statsMap.keySet());
+        Collections.sort(inputs);
+        for (int i = 0; i < inputs.size(); i++) {
+            xtics.append("\"").append(inputs.get(i)).append("\" ").append(i).append(", ");
+        }
+        return xtics.substring(0, xtics.length() -2 ).toString();
     }
 }
