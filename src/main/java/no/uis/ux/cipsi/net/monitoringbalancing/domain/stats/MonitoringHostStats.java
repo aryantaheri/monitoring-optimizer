@@ -13,6 +13,7 @@ public class MonitoringHostStats {
     int flowNum = 0;
     Map<MonitoringHost, Integer> monitoringHostUsage = null;
     DescriptiveStatistics costStats;
+    DescriptiveStatistics reuseStats;
 
     public MonitoringHostStats(int flowNum,
             Map<MonitoringHost, Integer> monitoringHostUsage) {
@@ -25,13 +26,19 @@ public class MonitoringHostStats {
 
     private void initStats() {
         costStats = new DescriptiveStatistics();
+        reuseStats = new DescriptiveStatistics();
         for (MonitoringHost host : monitoringHostUsage.keySet()) {
             costStats.addValue(host.getCost());
+            reuseStats.addValue(monitoringHostUsage.get(host));
         }
     }
 
     public int getMonitoringHostNum() {
         return monitoringHostUsage.size();
+    }
+
+    public DescriptiveStatistics getReuseStats() {
+        return reuseStats;
     }
 
     private Integer getHostUsage(MonitoringHost host) {

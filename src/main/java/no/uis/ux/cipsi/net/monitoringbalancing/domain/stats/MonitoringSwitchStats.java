@@ -27,6 +27,7 @@ public class MonitoringSwitchStats {
     Map<Switch, Integer> monitoringSwitchUsage = null;
     DescriptiveStatistics initCostStats;
     DescriptiveStatistics perFlowReuseCostRatioStats;
+    DescriptiveStatistics swReuseStats;
 
 
     public MonitoringSwitchStats(
@@ -53,9 +54,11 @@ public class MonitoringSwitchStats {
     private void initStats(){
         initCostStats = new DescriptiveStatistics();
         perFlowReuseCostRatioStats = new DescriptiveStatistics();
+        swReuseStats = new DescriptiveStatistics();
         for (Switch sw : monitoringSwitchUsage.keySet()) {
             initCostStats.addValue(sw.getInitCost());
             perFlowReuseCostRatioStats.addValue(sw.getPerFlowReuseCostRatio());
+            swReuseStats.addValue(monitoringSwitchUsage.get(sw));
         }
     }
 
@@ -69,6 +72,10 @@ public class MonitoringSwitchStats {
 
     public int getMonitoringSwitchesNum() {
         return monitoringSwitchesNum;
+    }
+
+    public DescriptiveStatistics getSwitchReuseStats() {
+        return swReuseStats;
     }
 
     public int getSwitchCountInLayer(TYPE type) {
