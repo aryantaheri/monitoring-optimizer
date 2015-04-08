@@ -16,7 +16,7 @@ public class PlotUtils {
     public static Map<String, List<Point<Number>>> addDataPoint(String dataSetName, int x, double y, Map<String, List<Point<Number>>> dataPointMap) {
         List<Point<Number>> dataPointList = dataPointMap.get(dataSetName);
         if (dataPointList == null){
-            dataPointList = new ArrayList<>();
+            dataPointList = new ArrayList<Point<Number>>();
             dataPointMap.put(dataSetName, dataPointList);
         }
 
@@ -32,7 +32,7 @@ public class PlotUtils {
     public static Map<String, List<Point<Number>>> addBoxDataPoint(String dataSetName, int x, double xOffset, double boxWidth, double y, Map<String, List<Point<Number>>> dataPointMap) {
         List<Point<Number>> dataPointList = dataPointMap.get(dataSetName);
         if (dataPointList == null){
-            dataPointList = new ArrayList<>();
+            dataPointList = new ArrayList<Point<Number>>();
             dataPointMap.put(dataSetName, dataPointList);
         }
 
@@ -48,7 +48,7 @@ public class PlotUtils {
     public static Map<String, List<Point<Number>>> addCandleStickDataPoints(String dataSetName, int x, double xOffset, double boxWidth, DescriptiveStatistics stats, Map<String, List<Point<Number>>> dataPointMap) {
         List<Point<Number>> dataPointList = dataPointMap.get(dataSetName);
         if (dataPointList == null){
-            dataPointList = new ArrayList<>();
+            dataPointList = new ArrayList<Point<Number>>();
             dataPointMap.put(dataSetName, dataPointList);
         }
 
@@ -66,7 +66,7 @@ public class PlotUtils {
     public static Map<String, List<Point<Number>>> addDataPointsWithMinMax(String dataSetName, int x, double xOffset, double boxWidth, DescriptiveStatistics stats, Map<String, List<Point<Number>>> dataPointMap) {
         List<Point<Number>> dataPointList = dataPointMap.get(dataSetName);
         if (dataPointList == null){
-            dataPointList = new ArrayList<>();
+            dataPointList = new ArrayList<Point<Number>>();
             dataPointMap.put(dataSetName, dataPointList);
         }
 
@@ -122,7 +122,7 @@ public class PlotUtils {
 
     public static PointDataSet<Number> getSortedPointDataSetWithMinMaxForBox(List<Point<Number>> pointListOrig, boolean inverse) {
         PointDataSet<Number> points = new PointDataSet<>();
-        List<Point<Number>> pointList = new ArrayList<>();
+        List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
         // Fail-safe behavior
@@ -158,7 +158,7 @@ public class PlotUtils {
 
     public static PointDataSet<Number> getSortedPointDataSetForBox(List<Point<Number>> pointListOrig, boolean inverse) {
         PointDataSet<Number> points = new PointDataSet<>();
-        List<Point<Number>> pointList = new ArrayList<>();
+        List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
         // Fail-safe behavior
@@ -192,7 +192,7 @@ public class PlotUtils {
 
     public static PointDataSet<Number> getSortedPointDataSet(List<Point<Number>> pointListOrig, boolean inverse) {
         PointDataSet<Number> points = new PointDataSet<>();
-        List<Point<Number>> pointList = new ArrayList<>();
+        List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
         // Fail-safe behavior
