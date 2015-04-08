@@ -84,7 +84,7 @@ public class PlotUtils {
 
     public static PointDataSet<Number> getSortedPointDataSetForCandleStick(List<Point<Number>> pointListOrig, boolean inverse) {
         PointDataSet<Number> points = new PointDataSet<>();
-        List<Point<Number>> pointList = new ArrayList<>();
+        List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
         // Fail-safe behavior
