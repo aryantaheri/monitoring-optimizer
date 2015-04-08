@@ -121,7 +121,7 @@ public class PlotUtils {
     }
 
     public static PointDataSet<Number> getSortedPointDataSetWithMinMaxForBox(List<Point<Number>> pointListOrig, boolean inverse) {
-        PointDataSet<Number> points = new PointDataSet<>();
+        PointDataSet<Number> points = new PointDataSet<Number>();
         List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
@@ -157,7 +157,7 @@ public class PlotUtils {
     }
 
     public static PointDataSet<Number> getSortedPointDataSetForBox(List<Point<Number>> pointListOrig, boolean inverse) {
-        PointDataSet<Number> points = new PointDataSet<>();
+        PointDataSet<Number> points = new PointDataSet<Number>();
         List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
@@ -191,7 +191,7 @@ public class PlotUtils {
     }
 
     public static PointDataSet<Number> getSortedPointDataSet(List<Point<Number>> pointListOrig, boolean inverse) {
-        PointDataSet<Number> points = new PointDataSet<>();
+        PointDataSet<Number> points = new PointDataSet<Number>();
         List<Point<Number>> pointList = new ArrayList<Point<Number>>();
         int scale = ((inverse == true) ? -1 : 1);
 
