@@ -26,7 +26,7 @@ public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Ser
     private static final long serialVersionUID = 1L;
 
     private Graph<Node, WeightedLink> topology;
-    private Yen<Node, WeightedLink> algo;
+    private transient Yen<Node, WeightedLink> algo;
     List<Switch> monitoringSwitches;
     List<MonitoringHost> monitoringHosts;
     List<TrafficFlow> trafficFlows;
