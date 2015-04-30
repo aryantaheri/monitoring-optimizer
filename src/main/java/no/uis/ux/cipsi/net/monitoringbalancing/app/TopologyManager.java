@@ -186,6 +186,8 @@ public class TopologyManager {
 
     public static List<Switch> getSwitchesOnPath(Graph<Node, WeightedLink> topology, List<WeightedLink> path){
         List<Switch> switchesOnPath = new ArrayList<Switch>();
+        if (path == null || path.size() == 0) return switchesOnPath;
+
         for (WeightedLink link : path) {
             Node src = topology.getSource(link);
             if (src instanceof Switch){
@@ -198,6 +200,20 @@ public class TopologyManager {
         }
 
         return switchesOnPath;
+    }
+
+    public static List<Node> getNodesOnPath(Graph<Node, WeightedLink> topology, List<WeightedLink> path){
+        List<Node> nodesOnPath = new ArrayList<Node>();
+        if (path == null || path.size() == 0) return nodesOnPath;
+
+        for (WeightedLink link : path) {
+            Node src = topology.getSource(link);
+            nodesOnPath.add(src);
+        }
+        Node lastDst = topology.getDest(path.get(path.size() - 1));
+        nodesOnPath.add(lastDst);
+
+        return nodesOnPath;
     }
 
     public static boolean isSwitchOnPath(Graph<Node, WeightedLink> topology, List<WeightedLink> path, Switch monitoringSwitch) {

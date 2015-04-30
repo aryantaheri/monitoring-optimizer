@@ -13,20 +13,50 @@ public class FatTreeStateMachine {
      *      |    |     |     |                 |
      *      v    v     v     v                 |
      *      h1 -> e1 -> a1 -> c -> a2 -> e2 -> h2
-     *      ^          |         ^         |
-     *      |          |         |         |
-     *      |          -----------         |
-     *      -------------------------------
+     *            |     |          ^           ^
+     *            |     |          |           |
+     *            |     ------------           |
+     *            |                            |
+     *            ------------------------------
      */
 
     public FatTreeStateMachine() {
         // TODO Auto-generated constructor stub
     }
     public FatTreeStateMachine(FatTreeStateMachine sm) {
-        state = sm.state;
+        switch (sm.state) {
+        case H1:
+            this.state = State.H1;
+            break;
+        case E1:
+            this.state = State.E1;
+            break;
+        case A1:
+            this.state = State.A1;
+            break;
+        case C:
+            this.state = State.C;
+            break;
+        case A2:
+            this.state = State.A2;
+            break;
+        case E2:
+            this.state = State.E2;
+            break;
+        case H2:
+            this.state = State.H2;
+            break;
+        case START:
+            this.state = State.START;
+            break;
+
+        default:
+            break;
+        }
     }
     enum State {
         START, H1, E1, A1, C, A2, E2, H2
+
     }
     State state = State.START;
 
@@ -100,6 +130,9 @@ public class FatTreeStateMachine {
             switch (nextMove) {
             case A:
                 state = State.A1;
+                break;
+            case H:
+                state = State.H2;
                 break;
 
             default:
@@ -204,7 +237,9 @@ public class FatTreeStateMachine {
             case A:
                 valid = true;
                 break;
-
+            case H:
+                valid = true;
+                break;
             default:
                 valid = false;
             }
