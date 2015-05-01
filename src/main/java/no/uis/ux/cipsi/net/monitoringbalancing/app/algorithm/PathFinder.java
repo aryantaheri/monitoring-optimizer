@@ -50,7 +50,7 @@ public class PathFinder {
             //                }
             //            }
         }
-
+        writePaths();
         printInfo(topo);
     }
 
@@ -166,7 +166,7 @@ public class PathFinder {
     }
 
 
-    private String prettyPrintPath(Graph<Node, WeightedLink> topo, List<WeightedLink> path) {
+    public static String prettyPrintPath(Graph<Node, WeightedLink> topo, List<WeightedLink> path) {
         StringBuilder p = new StringBuilder();
         for (WeightedLink weightedLink : path) {
             p.append(topo.getSource(weightedLink)).append("-")
@@ -176,7 +176,7 @@ public class PathFinder {
         return p.toString();
     }
 
-    private String prettyPrintSwitchOnPath(Graph<Node, WeightedLink> topo, List<WeightedLink> path) {
+    public static String prettyPrintSwitchOnPath(Graph<Node, WeightedLink> topo, List<WeightedLink> path) {
         StringBuilder p = new StringBuilder();
         for (WeightedLink weightedLink : path) {
             p.append(topo.getSource(weightedLink)).append("-")
@@ -200,7 +200,7 @@ public class PathFinder {
 
 
 
-    private String printPathsInCsv() {
+    public String printPathsInCsv() {
         StringBuilder out = new StringBuilder();
         List<Node> sources = new ArrayList<Node>(pathsMap.keySet());
 
@@ -291,7 +291,9 @@ public class PathFinder {
         System.out.println(printPathsInCsv());
     }
 
+    private void writePaths() {
 
+    }
 
 
 
