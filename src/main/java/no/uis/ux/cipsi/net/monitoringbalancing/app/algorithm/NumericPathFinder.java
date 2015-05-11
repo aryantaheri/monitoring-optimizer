@@ -2,7 +2,10 @@ package no.uis.ux.cipsi.net.monitoringbalancing.app.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Host;
@@ -14,6 +17,8 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +28,156 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 
 public class NumericPathFinder {
-    private static Logger log = LoggerFactory.getLogger(TopologyManager.class);
+    private static Logger log = LoggerFactory.getLogger(NumericPathFinder.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+        //        benchmarkNumericPathFinder(4, 200, true);
+        //        benchmarkNumericPathFinder(8, 2000, true);
+        //        benchmarkNumericPathFinder(16, 2000, true);
+        //        benchmarkNumericPathFinder(32, 2000, true);
+        //        benchmarkNumericPathFinder(48, 2000, true);
+        //        benchmarkNumericPathFinder(4, 200, false);
+        //        benchmarkNumericPathFinder(8, 2000, false);
+        //        benchmarkNumericPathFinder(16, 2000, false);
+        //        benchmarkNumericPathFinder(32, 20000, false);
+        //        benchmarkNumericPathFinder(48, 20000, false);
+
+
+        PathFinderUtil.benchmarkDijkstra(4, 200, true);
+        PathFinderUtil.benchmarkDijkstra(8, 2000, true);
+        PathFinderUtil.benchmarkDijkstra(16, 2000, true);
+        PathFinderUtil.benchmarkDijkstra(32, 2000, true);
+        PathFinderUtil.benchmarkDijkstra(48, 2000, true);
+        PathFinderUtil.benchmarkDijkstra(4, 200, false);
+        PathFinderUtil.benchmarkDijkstra(8, 2000, false);
+        PathFinderUtil.benchmarkDijkstra(16, 2000, false);
+        PathFinderUtil.benchmarkDijkstra(32, 2000, false);
+        PathFinderUtil.benchmarkDijkstra(48, 2000, false);
+    }
+    public static void main2(String[] args) {
+        HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
+
+        int k = 8;
+        Configs cnf = Configs.getDefaultConfigs();
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
+        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
+
+        int pairs = 0;
+        long lastTimeStamp = new Date().getTime();
+        Collection<Node> nodes = topo.getVertices();
+        for (Node src : nodes) {
+            for (Node dst : nodes) {
+                if (src.equals(dst)) continue;
+                if(src instanceof Host && dst instanceof Host) {
+                    List<List<WeightedLink>> paths;
+                    try {
+                        paths = NumericPathFinder.findPath(topo, k, src, dst);
+                        PathFinderUtil.addPaths(numericPathsMap, topo, paths);
+                        pairs++;
+                        if (pairs % 100 == 0){
+                            long currentTimeStamp = new Date().getTime();
+                            log.info("Pairs processed={} time={} avg-pair-per-second={}",
+                                    pairs, new Date(currentTimeStamp), 100*1000 / (currentTimeStamp - lastTimeStamp));
+                            lastTimeStamp = currentTimeStamp;
+                        }
+                    } catch (Exception e) {
+                        log.error("setNumericPathsMap msg={}", e.getMessage());
+                    }
+                }
+            }
+        }
+        PathFinderUtil.writePathsInCsv("/tmp/numeric-paths-48.txt", numericPathsMap);
+        //        testFindHostToAllHosts();
+    }
+
+    private static double benchmarkNumericPathFinder(int k, int terminatingHostCount, boolean persistWithSubpath) {
+        DescriptiveStatistics pairPerSecondStats = new DescriptiveStatistics();
+
+        HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
+
+        Configs cnf = Configs.getDefaultConfigs();
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
+        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
+
+        int pairs = 0;
+        long lastTimeStamp = new Date().getTime();
+        Collection<Node> nodes = topo.getVertices();
+        for (Node src : nodes) {
+            for (Node dst : nodes) {
+                if (src.equals(dst)) continue;
+                if (pairs == terminatingHostCount) break;
+                if(src instanceof Host && dst instanceof Host) {
+                    List<List<WeightedLink>> paths;
+                    try {
+                        paths = NumericPathFinder.findPath(topo, k, src, dst);
+                        if (persistWithSubpath){
+                            PathFinderUtil.addPaths(numericPathsMap, topo, paths);
+                        }
+
+                        pairs++;
+                        if (pairs % 100 == 0){
+                            long currentTimeStamp = new Date().getTime();
+                            double pairPerSecond = 100*1000 / (currentTimeStamp - lastTimeStamp);
+                            //                            log.info("Pairs processed={} time={} avg-pair-per-second={}",
+                            //                                    pairs, new Date(currentTimeStamp), pairPerSecond);
+                            lastTimeStamp = currentTimeStamp;
+                            pairPerSecondStats.addValue(pairPerSecond);
+                        }
+                    } catch (Exception e) {
+                        log.error("setNumericPathsMap msg={}", e.getMessage());
+                    }
+                }
+            }
+        }
+        int foundPaths = PathFinderUtil.getTotalPaths(numericPathsMap);
+        double totalPaths = Math.pow(k, 6);
+        log.info("Stats: k={} persistWithSubPath={} pairPerSecond={}/{}/{}/{} foundPaths={} totalPaths={} pairs={}",
+                k, persistWithSubpath,
+                pairPerSecondStats.getMin(), pairPerSecondStats.getMean(), pairPerSecondStats.getMax(), pairPerSecondStats.getStandardDeviation(),
+                foundPaths, totalPaths, pairs);
+        return pairPerSecondStats.getMean();
+    }
+
+    private static void testFindHostToAllHosts() {
+        HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
+
+        int k = 4;
+        Configs cnf = Configs.getDefaultConfigs();
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
+        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
+
+        int pairs = 0;
+        long lastTimeStamp = new Date().getTime();
+        Collection<Node> nodes = topo.getVertices();
+        for (Node src : nodes) {
+            if (!(src.getId().equalsIgnoreCase("host1"))) continue;
+            for (Node dst : nodes) {
+                if (!(dst instanceof Host)) continue;
+                if (src.equals(dst)) continue;
+                if(src instanceof Host && dst instanceof Host) {
+                    List<List<WeightedLink>> paths;
+                    try {
+                        paths = NumericPathFinder.findPath(topo, k, src, dst);
+                        PathFinderUtil.addPaths(numericPathsMap, topo, paths);
+                        pairs++;
+                        if (pairs % 100 == 0){
+                            long currentTimeStamp = new Date().getTime();
+                            log.info("Pairs processed={} time={} avg-pair-per-second={}",
+                                    pairs, new Date(currentTimeStamp), 100*1000 / (currentTimeStamp - lastTimeStamp));
+                            lastTimeStamp = currentTimeStamp;
+                        }
+                    } catch (Exception e) {
+                        log.error("setNumericPathsMap msg={}", e.getMessage());
+                    }
+                }
+            }
+            break;
+        }
+        PathFinderUtil.writePathsInCsv("/tmp/numeric-paths-4-hosttohosts.txt", numericPathsMap);
+
+    }
+
+    public static void test(String[] args) throws Exception {
         int k = 4;
         Configs cnf = Configs.getDefaultConfigs();
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
@@ -37,7 +189,7 @@ public class NumericPathFinder {
             }
             System.out.println("");
         }
-        List<List<WeightedLink>> paths = findPaths(topo, k, getHost(topo, 1), getHost(topo, 2));
+        List<List<WeightedLink>> paths = findHostPaths(topo, k, getHost(topo, 1), getHost(topo, 2));
         System.out.println("src: " + getHost(topo, 1) + " dst: " + getHost(topo, 2));
         System.out.println("path size: " + paths.size());
         System.out.println(paths);
@@ -45,7 +197,7 @@ public class NumericPathFinder {
             System.out.println(PathFinder.prettyPrintPath(topo, path));
         }
 
-        paths = findPaths(topo, k, getHost(topo, 1), getHost(topo, k/2+1));
+        paths = findHostPaths(topo, k, getHost(topo, 1), getHost(topo, k/2+1));
         System.out.println("src: " + getHost(topo, 1) + " dst: " + getHost(topo, k/2+1));
         System.out.println("path size: " + paths.size());
         System.out.println(paths);
@@ -53,7 +205,7 @@ public class NumericPathFinder {
             System.out.println(PathFinder.prettyPrintPath(topo, path));
         }
 
-        paths = findPaths(topo, k, getHost(topo, 1), getHost(topo, (k*k/4)+1));
+        paths = findHostPaths(topo, k, getHost(topo, 1), getHost(topo, (k*k/4)+1));
         System.out.println("src: " + getHost(topo, 1) + " dst: " + getHost(topo, k+1));
         System.out.println("path size: " + paths.size());
         System.out.println(paths);
@@ -69,13 +221,13 @@ public class NumericPathFinder {
             System.out.println(PathFinder.prettyPrintPath(topo, path));
         }
 
-        paths = findSwitchHostPaths(topo, k, getSwitch(topo, 7), getHost(topo, 1));
-        System.out.println("src: " + getSwitch(topo, 7) + " dst: " + getHost(topo, 1));
+        Node src = getSwitch(topo, 7);
+        Node dst = getHost(topo, 1);
+        paths = findSwitchHostPaths(topo, k, (Switch) src, (Host) dst);
+        System.out.println("src: " + src + " dst: " + dst);
         System.out.println("path size: " + paths.size());
         System.out.println(paths);
-        for (List<WeightedLink> path : paths) {
-            System.out.println(PathFinder.prettyPrintPath(topo, path));
-        }
+        System.out.println(PathFinder.prettyPrintPaths(topo, paths));
 
         paths = findSwitchHostPaths(topo, k, getSwitch(topo, 6), getHost(topo, 1));
         System.out.println("src: " + getSwitch(topo, 7) + " dst: " + getHost(topo, 1));
@@ -94,6 +246,21 @@ public class NumericPathFinder {
         }
     }
 
+    public static List<List<WeightedLink>>  findPath(Graph<Node, WeightedLink> topo, int k, Node src, Node dst) throws Exception {
+        if (src.equals(dst)) return null;
+
+        if (src instanceof Host && dst instanceof Host){
+            return findHostPaths(topo, k, src, dst);
+        } else if (src instanceof Switch && dst instanceof Host){
+            return findSwitchHostPaths(topo, k, (Switch) src, (Host) dst);
+        } else if (src instanceof Switch && dst instanceof Switch){
+            return findSwitchPaths(topo, k, (Switch) src, (Switch) dst);
+        } else {
+            throw new NotImplementedException("NumericFindPath is not implemented for src="+src+", dst="+dst);
+        }
+
+    }
+
     private static List<List<WeightedLink>> findSwitchHostPaths(Graph<Node, WeightedLink> topo, int k, Switch src, Host dst) {
         int srcPodId = getSwitchPodId(k, getIntValue(src.getId()));
         int dstPodId = getPodId(k, getIntValue(dst.getId()));
@@ -104,7 +271,13 @@ public class NumericPathFinder {
         if (srcPodId == dstPodId){
             // Same Pod
             if (src.getType() == TYPE.EDGE){
-                return getLocalEdgePaths(topo, k, src, dst);
+                if (dstEdgeId == getIntValue(src.getId())) {
+                    // Directly connected
+                    return getLocalEdgePaths(topo, k, src, dst);
+                } else {
+                    // Connected via local Aggrs.
+                    return getRemoteEdgePaths(topo, k, src, dst);
+                }
             } else if (src.getType() == TYPE.AGGREGATION) {
                 return getLocalAggrPaths(topo, k, src, dst);
             }
@@ -121,6 +294,8 @@ public class NumericPathFinder {
         }
         return null;
     }
+
+
 
     private static List<List<WeightedLink>> getDifferentPodEdgeSwitchHostPaths(Graph<Node, WeightedLink> topo, int k, Switch src, Host dst) {
         int dstEdgeId = getEdgeId(k, getIntValue(dst.getId()));
@@ -224,6 +399,10 @@ public class NumericPathFinder {
         int srcPodId = getSwitchPodId(k, getIntValue(src.getId()));
         int dstPodId = getPodId(k, getIntValue(dst.getId()));
 
+        if (srcPodId != dstPodId){
+            log.error("getLocalAggrPaths: Internal error, srcPodId != dstPodId for src={} dst={}", src, dst);
+        }
+
         int dstEdgeId = getEdgeId(k, getIntValue(dst.getId()));
         Switch dstEdgeSw = getSwitch(topo, dstEdgeId);
 
@@ -236,6 +415,37 @@ public class NumericPathFinder {
 
         return mergeLinks(listOfLinks);
 
+    }
+
+    private static List<List<WeightedLink>> getRemoteEdgePaths(
+            Graph<Node, WeightedLink> topo, int k, Switch src, Host dst) {
+
+        int srcPodId = getSwitchPodId(k, getIntValue(src.getId()));
+        int dstPodId = getPodId(k, getIntValue(dst.getId()));
+
+        if (srcPodId != dstPodId){
+            log.error("getLocalAggrPaths: Internal error, srcPodId != dstPodId for src={} dst={}", src, dst);
+        }
+
+        int dstEdgeId = getEdgeId(k, getIntValue(dst.getId()));
+        Switch dstEdgeSw = getSwitch(topo, dstEdgeId);
+
+
+        List<Integer> aggrIds = getAggIdsFromPodId(k, srcPodId);
+
+        List<Switch> aggrs = getSwitches(topo, aggrIds);
+        List<List<WeightedLink>> paths = new ArrayList<List<WeightedLink>>();
+        List<WeightedLink> path;
+
+        List<WeightedLink> downLinks2 = getLinks(topo, dstEdgeSw, dst);
+
+        for (Switch aggr : aggrs) {
+            List<WeightedLink> upLinks1 = getLinks(topo, src, aggr);
+            List<WeightedLink> downLinks1 = getLinks(topo, aggr, dstEdgeSw);
+            paths.addAll(mergeLinks(Lists.newArrayList(upLinks1, downLinks1, downLinks2)));
+        }
+
+        return paths;
     }
 
     private static List<List<WeightedLink>> getLocalEdgePaths(
@@ -277,6 +487,19 @@ public class NumericPathFinder {
         } else {
             // Different pods
             //TODO
+            if (src.getType() == TYPE.EDGE && dst.getType() == TYPE.EDGE){
+                //TODO
+
+            } else if (src.getType() == TYPE.EDGE && dst.getType() == TYPE.AGGREGATION){
+                //TODO
+
+            } else if (src.getType() == TYPE.AGGREGATION && dst.getType() == TYPE.EDGE){
+                //TODO
+
+            } else if (src.getType() == TYPE.AGGREGATION && dst.getType() == TYPE.AGGREGATION){
+                //TODO
+
+            }
         }
 
         return null;
@@ -334,7 +557,7 @@ public class NumericPathFinder {
     }
 
 
-    private static List<List<WeightedLink>> findPaths(Graph<Node, WeightedLink> topo, int k, Node src, Node dst) throws Exception {
+    private static List<List<WeightedLink>> findHostPaths(Graph<Node, WeightedLink> topo, int k, Node src, Node dst) throws Exception {
         if (src.equals(dst)) return null;
 
         if (src instanceof Host && dst instanceof Host){
@@ -525,23 +748,45 @@ public class NumericPathFinder {
         return links;
     }
 
+    private static Map<Integer, Map<String, Node>> nodeIdCache = new HashMap<Integer, Map<String, Node>>();
+
+    private static Node getNodeFromCache(Graph<Node,WeightedLink> topo, String nodeName) {
+        if (nodeIdCache.get(topo.hashCode()) == null) return null;
+        return nodeIdCache.get(topo.hashCode()).get(nodeName);
+    }
+    private static void addNodeToCache(Graph<Node,WeightedLink> topo, String nodeName, Node node) {
+        Map<String, Node> topoCache = nodeIdCache.get(topo.hashCode());
+        if (topoCache == null) {
+            topoCache = new HashMap<String, Node>();
+        }
+        topoCache.put(nodeName, node);
+        nodeIdCache.put(topo.hashCode(), topoCache);
+    }
+
     private static List<Switch> getSwitches(Graph<Node,WeightedLink> topo, List<Integer> swIds) {
         List<Switch> switches = new ArrayList<Switch>();
-        for (Node node : topo.getVertices()) {
-            for (Integer swId : swIds) {
-                String id = "sw"+swId;
-                if (node instanceof Switch && node.getId().equalsIgnoreCase(id)){
-                    switches.add((Switch) node);
-                }
-            }
+        for (Integer swId : swIds) {
+            switches.add(getSwitch(topo, swId));
         }
+
+        //        for (Node node : topo.getVertices()) {
+        //            for (Integer swId : swIds) {
+        //                String id = "sw"+swId;
+        //                if (node instanceof Switch && node.getId().equalsIgnoreCase(id)){
+        //                    switches.add((Switch) node);
+        //                }
+        //            }
+        //        }
         return switches;
     }
 
     private static Switch getSwitch(Graph<Node,WeightedLink> topo, int swId) {
         String id = "sw"+swId;
+        Switch cachedNode = (Switch) getNodeFromCache(topo, id);
+        if (cachedNode != null) return cachedNode;
         for (Node node : topo.getVertices()) {
             if (node instanceof Switch && node.getId().equalsIgnoreCase(id)){
+                addNodeToCache(topo, id, node);
                 return (Switch) node;
             }
         }

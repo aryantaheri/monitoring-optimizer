@@ -24,16 +24,19 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class PathFinder {
     public static void main(String[] args) throws Exception {
-        new PathFinder().findPaths();
+        Configs cnf = Configs.getDefaultConfigs();
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, "48");
+        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
+
+        new PathFinder().findPaths(topo);
     }
 
     HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> pathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
 
-    private void findPaths() throws Exception {
-        Configs cnf = Configs.getDefaultConfigs();
-        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, "48");
-        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
-        PathFinder pathFinder = new PathFinder();
+    public HashMap<Node,HashMap<Node,List<List<WeightedLink>>>> findPaths(Graph<Node, WeightedLink> topo) throws Exception {
+        //        Configs cnf = Configs.getDefaultConfigs();
+        //        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, "48");
+        //        Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
 
         Collection<Node> nodes = topo.getVertices();
         for (Node node : nodes) {
@@ -52,6 +55,7 @@ public class PathFinder {
         }
         writePaths();
         printInfo(topo);
+        return pathsMap;
     }
 
 
@@ -106,7 +110,6 @@ public class PathFinder {
                 addPath(src, dst, path.subList(i, j + 1));
             }
         }
-
     }
 
     private void addPath(Node src, Node dst, List<WeightedLink> path) {
@@ -165,6 +168,14 @@ public class PathFinder {
         }
     }
 
+
+    public static String prettyPrintPaths(Graph<Node, WeightedLink> topo, List<List<WeightedLink>> paths) {
+        StringBuilder out = new StringBuilder();
+        for (List<WeightedLink> path : paths) {
+            out.append(prettyPrintPath(topo, path));
+        }
+        return out.toString();
+    }
 
     public static String prettyPrintPath(Graph<Node, WeightedLink> topo, List<WeightedLink> path) {
         StringBuilder p = new StringBuilder();
