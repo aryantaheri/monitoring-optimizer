@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -27,6 +28,7 @@ public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Ser
 
     private Graph<Node, WeightedLink> topology;
     private transient Yen<Node, WeightedLink> algo;
+    private Configs configs;
     List<Switch> monitoringSwitches;
     List<MonitoringHost> monitoringHosts;
     List<TrafficFlow> trafficFlows;
@@ -41,12 +43,14 @@ public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Ser
 
     public MonitoringBalance(Graph<Node, WeightedLink> topology,
             Yen<Node, WeightedLink> algo,
+            Configs configs,
             List<Switch> monitoringSwitches,
             List<MonitoringHost> monitoringHosts,
             List<TrafficFlow> trafficFlows) {
 
         this.topology = topology;
         this.algo = algo;
+        this.configs = configs;
         this.monitoringSwitches = monitoringSwitches;
         this.monitoringHosts = monitoringHosts;
         this.trafficFlows = trafficFlows;
@@ -58,6 +62,10 @@ public class MonitoringBalance implements Solution<HardSoftBigDecimalScore>, Ser
 
     public Yen<Node, WeightedLink> getAlgo() {
         return algo;
+    }
+
+    public Configs getConfigs() {
+        return configs;
     }
 
     @ValueRangeProvider(id = "monitoringSwitchRange")

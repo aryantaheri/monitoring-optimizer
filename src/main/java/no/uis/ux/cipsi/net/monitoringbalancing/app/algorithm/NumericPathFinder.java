@@ -31,7 +31,7 @@ public class NumericPathFinder {
     private static Logger log = LoggerFactory.getLogger(NumericPathFinder.class);
 
     public static void main(String[] args) {
-        //        benchmarkNumericPathFinder(4, 200, true);
+        benchmarkNumericPathFinder(4, 2000, true);
         //        benchmarkNumericPathFinder(8, 2000, true);
         //        benchmarkNumericPathFinder(16, 2000, true);
         //        benchmarkNumericPathFinder(32, 2000, true);
@@ -43,16 +43,16 @@ public class NumericPathFinder {
         //        benchmarkNumericPathFinder(48, 20000, false);
 
 
-        PathFinderUtil.benchmarkDijkstra(4, 200, true);
-        PathFinderUtil.benchmarkDijkstra(8, 2000, true);
-        PathFinderUtil.benchmarkDijkstra(16, 2000, true);
-        PathFinderUtil.benchmarkDijkstra(32, 2000, true);
-        PathFinderUtil.benchmarkDijkstra(48, 2000, true);
-        PathFinderUtil.benchmarkDijkstra(4, 200, false);
-        PathFinderUtil.benchmarkDijkstra(8, 2000, false);
-        PathFinderUtil.benchmarkDijkstra(16, 2000, false);
-        PathFinderUtil.benchmarkDijkstra(32, 2000, false);
-        PathFinderUtil.benchmarkDijkstra(48, 2000, false);
+        //        PathFinderUtil.benchmarkDijkstra(4, 200, true);
+        //        PathFinderUtil.benchmarkDijkstra(8, 2000, true);
+        //        PathFinderUtil.benchmarkDijkstra(16, 2000, true);
+        //        PathFinderUtil.benchmarkDijkstra(32, 2000, true);
+        //        PathFinderUtil.benchmarkDijkstra(48, 2000, true);
+        //        PathFinderUtil.benchmarkDijkstra(4, 200, false);
+        //        PathFinderUtil.benchmarkDijkstra(8, 2000, false);
+        //        PathFinderUtil.benchmarkDijkstra(16, 2000, false);
+        //        PathFinderUtil.benchmarkDijkstra(32, 2000, false);
+        //        PathFinderUtil.benchmarkDijkstra(48, 2000, false);
     }
     public static void main2(String[] args) {
         HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();

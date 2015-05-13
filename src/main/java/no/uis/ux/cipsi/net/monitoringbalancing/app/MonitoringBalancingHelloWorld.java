@@ -67,7 +67,10 @@ public class MonitoringBalancingHelloWorld {
             monitoringHost = flow.getMonitoringHost();
             path = flow.getPath();
             isOnPath = TopologyManager.isSwitchOnPath(monitoringBalance.getTopology(), path, monitoringSwitch);
-            distance = TopologyManager.getRandomShortestPath(monitoringBalance.getAlgo(), flow.getMonitoringSwitch(), flow.getMonitoringHost(), 4).size();
+            distance = TopologyManager.getRandomShortestPath(monitoringBalance.getTopology(),
+                    monitoringBalance.getConfigs(),
+                    flow.getMonitoringSwitch(),
+                    flow.getMonitoringHost(), 4).size();
 
 
             if (isOnPath) onPathMonitoringSwitches++;

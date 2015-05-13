@@ -108,7 +108,7 @@ public class MonitoringBalancingGenerator {
         List<Host> hosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
         logger.info("Hosts[{}] {}", hosts.size(), hosts);
 
-        MonitoringBalance monitoringBalance = new MonitoringBalance(topology, algo, monitoringSwitches, monitoringHosts, trafficFlows);
+        MonitoringBalance monitoringBalance = new MonitoringBalance(topology, algo, configs, monitoringSwitches, monitoringHosts, trafficFlows);
 
         return monitoringBalance;
     }
@@ -128,7 +128,7 @@ public class MonitoringBalancingGenerator {
                     continue;
                 }
                 should++;
-                TrafficFlow flow = generateTrafficFlow(topology, algo, srcHost, dstHost, rate);
+                TrafficFlow flow = generateTrafficFlow(topology, algo, configs, srcHost, dstHost, rate);
                 tempId++;
                 logger.debug("generateTrafficFlows: generated={} notGenerated={} id={} flow={}", should, shouldNot, tempId, flow);
                 flows.add(flow);
@@ -138,12 +138,12 @@ public class MonitoringBalancingGenerator {
         return flows;
     }
 
-    private TrafficFlow generateTrafficFlow(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Host srcHost, Host dstHost, double rate) {
+    private TrafficFlow generateTrafficFlow(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Configs configs, Host srcHost, Host dstHost, double rate) {
         // FIXME This is not good, but #=4 makes it too slow for k=48.
         // Store paths and lookup them.
         //        int shortestPathsNum = 1;
         int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
-        List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, srcHost, dstHost, shortestPathsNum);
+        List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, srcHost, dstHost, shortestPathsNum);
         //        List<WeightedLink> path = TopologyManager.getShortestPath(algo, srcHost, dstHost);
         List<Switch> onPathMonitoringSwitches = TopologyManager.getSwitchesOnPath(topology, path);
         TrafficFlow flow = new TrafficFlow(srcHost, dstHost,

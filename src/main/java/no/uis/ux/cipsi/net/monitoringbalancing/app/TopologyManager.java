@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
+import no.uis.ux.cipsi.net.monitoringbalancing.app.algorithm.NumericPathFinder;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.algorithm.YenNoCache;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Host;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
@@ -54,9 +55,9 @@ public class TopologyManager {
     //    }
 
 
-    public static List<WeightedLink> getRandomShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
+    public static List<WeightedLink> getRandomShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst, int k){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
-        List<List<WeightedLink>> paths = getKShortestPaths(yenKShortestPathsAlgo, src, dst, k);
+        List<List<WeightedLink>> paths = getKShortestPaths(topo, configs, src, dst, k);
         if (paths.size() < k){
             log.trace("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than K {}. Choosing #AvailablePaths {}", src, dst, paths.size(), k, Math.min(paths.size(), k));
         }
@@ -65,9 +66,9 @@ public class TopologyManager {
     }
 
 
-    public static List<WeightedLink> getShortestPath(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst){
+    public static List<WeightedLink> getShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
-        List<List<WeightedLink>> paths = getKShortestPaths(yenKShortestPathsAlgo, src, dst, 1);
+        List<List<WeightedLink>> paths = getKShortestPaths(topo, configs, src, dst, 1);
         if (paths.size() < 1){
             log.error("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than 1. returning", src, dst, paths.size());
             return null;
@@ -75,14 +76,25 @@ public class TopologyManager {
         return paths.get(0);
     }
 
-    public static List<List<WeightedLink>> getKShortestPaths(Yen<Node, WeightedLink> yenKShortestPathsAlgo, Node src, Node dst, int k){
-        List<List<WeightedLink>> cachedPaths = AlgoCache.getPaths(yenKShortestPathsAlgo, src, dst);
-        if (cachedPaths != null && cachedPaths.size() >= k) {
-            log.trace("getKShortestPaths cache hit");
-            return cachedPaths.subList(0, k);
+    public static List<List<WeightedLink>> getKShortestPaths(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst, int k){
+        //        List<List<WeightedLink>> cachedPaths = AlgoCache.getPaths(yenKShortestPathsAlgo, src, dst);
+        //        if (cachedPaths != null && cachedPaths.size() >= k) {
+        //            log.trace("getKShortestPaths cache hit");
+        //            return cachedPaths.subList(0, k);
+        //        }
+        //        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
+        //        AlgoCache.mergePaths(yenKShortestPathsAlgo, src, dst, paths);
+        List<List<WeightedLink>> paths = null;
+        try {
+            int kPort = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
+            List<List<WeightedLink>> allPaths = NumericPathFinder.findPath(topo, kPort, src, dst);
+            if (allPaths != null) {
+                paths = allPaths.subList(0, Math.min(k, allPaths.size()));
+            }
+        } catch (Exception e) {
+            log.error("getKShortestPaths: This should never happen", e);
+            return null;
         }
-        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
-        AlgoCache.mergePaths(yenKShortestPathsAlgo, src, dst, paths);
         return paths;
     }
 

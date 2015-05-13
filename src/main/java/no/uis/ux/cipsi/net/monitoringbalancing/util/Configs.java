@@ -1,11 +1,14 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.util;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 
-public class Configs {
+public class Configs implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     Map<ConfigName, String> configMap = new TreeMap<ConfigName, String>();
 

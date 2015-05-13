@@ -14,6 +14,7 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 
 import org.optaplanner.core.api.score.buildin.hardsoftbigdecimal.HardSoftBigDecimalScore;
 import org.optaplanner.core.impl.score.director.easy.EasyScoreCalculator;
@@ -49,8 +50,9 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
         List<TrafficFlow> trafficFlows = monitoringBalance.getTrafficFlows();
         Graph<Node, WeightedLink> topology = monitoringBalance.getTopology();
         Yen<Node, WeightedLink> algo = monitoringBalance.getAlgo();
+        Configs configs = monitoringBalance.getConfigs();
         calculateTrafficResourceUsage(topology, algo, trafficFlows);
-        calculateMonitoringResourceUsage(topology, algo, trafficFlows);
+        calculateMonitoringResourceUsage(topology, algo, configs, trafficFlows);
 
         double hardScore = sumHardScore();
         double softScore = sumSoftScore();
@@ -104,9 +106,9 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
     }
 
 
-    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, List<TrafficFlow> trafficFlows) {
+    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Configs configs, List<TrafficFlow> trafficFlows) {
         for (TrafficFlow trafficFlow : trafficFlows) {
-            calculateMonitoringResourceUsage(topology, algo, trafficFlow);
+            calculateMonitoringResourceUsage(topology, algo, configs, trafficFlow);
         }
     }
 
@@ -116,13 +118,13 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
      * which should account for the tunneling overhead as well.
      * @param trafficFlow
      */
-    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, TrafficFlow trafficFlow) {
+    private void calculateMonitoringResourceUsage(Graph<Node,WeightedLink> topology, Yen<Node,WeightedLink> algo, Configs configs, TrafficFlow trafficFlow) {
         if (trafficFlow.getMonitoringHost() == null || trafficFlow.getMonitoringSwitch() == null) {
             //            log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
             return;
         }
         //        log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
-        List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
+        List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
         trafficFlow.setMonitoringSwitchHostPath(path);
 
         calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD);
