@@ -88,7 +88,7 @@ public class MonitoringStatsManager {
         for (TrafficFlow trafficFlow : flows) {
             addToMap(monitoringSwitchHostMap, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
         }
-        MonitoringSwitchHostStats stats = new MonitoringSwitchHostStats(algo, monitoringSwitchHostMap);
+        MonitoringSwitchHostStats stats = new MonitoringSwitchHostStats(monitoringSwitchHostMap, flows);
         return stats;
     }
 

@@ -8,11 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import mulavito.algorithms.shortestpath.ksp.Yen;
-import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
-import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -20,15 +18,51 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class MonitoringSwitchHostStats {
 
     Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap;
+    Map<Switch, Map<MonitoringHost, Integer>> switchHostDistanceMap;
+    Map<MonitoringHost, Map<Switch, Integer>> hostSwitchDistanceMap;
     List<List<WeightedLink>> monitoringPaths;
-    Yen<Node,WeightedLink> algo;
+    //    Yen<Node,WeightedLink> algo;
+    List<TrafficFlow> flows;
 
-    public MonitoringSwitchHostStats(
-            Yen<Node,WeightedLink> algo, Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap) {
-        this.algo = algo;
+    public MonitoringSwitchHostStats(Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap, List<TrafficFlow> flows) {
+        //        this.algo = algo;
         this.monitoringSwitchHostMap = monitoringSwitchHostMap;
         this.monitoringPaths = new ArrayList<List<WeightedLink>>();
+        this.flows = flows;
 
+        initDistanceMaps();
+    }
+
+    private void initDistanceMaps() {
+        switchHostDistanceMap = new HashMap<Switch, Map<MonitoringHost,Integer>>();
+        hostSwitchDistanceMap = new HashMap<MonitoringHost, Map<Switch,Integer>>();
+
+        for (TrafficFlow flow : flows) {
+            Switch sw = flow.getMonitoringSwitch();
+            MonitoringHost host = flow.getMonitoringHost();
+            List<WeightedLink> monPath = flow.getMonitoringSwitchHostPath();
+            addToMap(hostSwitchDistanceMap, host, sw, monPath.size());
+            addToMap(switchHostDistanceMap, sw, host, monPath.size());
+            monitoringPaths.add(monPath);
+        }
+    }
+
+    private void addToMap(Map<Switch, Map<MonitoringHost, Integer>> map, Switch sw, MonitoringHost host, int distance) {
+        Map<MonitoringHost, Integer> hostMap = map.get(sw);
+        if (hostMap == null) {
+            hostMap = new HashMap<MonitoringHost, Integer>();
+        }
+        hostMap.put(host, distance);
+        map.put(sw, hostMap);
+    }
+
+    private void addToMap(Map<MonitoringHost, Map<Switch, Integer>> map, MonitoringHost host, Switch sw, int distance) {
+        Map<Switch, Integer> swMap = map.get(host);
+        if (swMap == null) {
+            swMap = new HashMap<Switch, Integer>();
+        }
+        swMap.put(sw, distance);
+        map.put(host, swMap);
     }
 
     private String getSwitchMapString() {
@@ -103,10 +137,11 @@ public class MonitoringSwitchHostStats {
 
         for (MonitoringHost host : hosts) {
             if (host == null) continue;
-            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, sw, host, 4);
-            stats.addValue(path.size());
+            //            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, sw, host, 4);
+            Integer d = switchHostDistanceMap.get(sw).get(host);
+            if (d != null) stats.addValue(d);
             // TODO: move it to a dedicated method, here for efficiency
-            monitoringPaths.add(path);
+            //            monitoringPaths.add(path);
         }
         return stats;
     }
@@ -117,8 +152,29 @@ public class MonitoringSwitchHostStats {
 
         for (Switch sw : switches) {
             if (sw == null) continue;
-            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, host, sw, 4);
-            stats.addValue(path.size());
+            //            List<WeightedLink> path = TopologyManager.getRandomShortestPath(algo, host, sw, 4);
+            Integer d = hostSwitchDistanceMap.get(host).get(sw);
+            if (d != null) stats.addValue(d);
+        }
+        return stats;
+    }
+
+    public DescriptiveStatistics getSwitchHostDistanceStats(){
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        for (Map<MonitoringHost, Integer> hostMap : switchHostDistanceMap.values()) {
+            for (Integer distance : hostMap.values()) {
+                if (distance != null) stats.addValue(distance);
+            }
+        }
+        return stats;
+    }
+
+    public DescriptiveStatistics getHostSwitchDistanceStats(){
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        for (Map<Switch, Integer> swMap : hostSwitchDistanceMap.values()) {
+            for (Integer distance : swMap.values()) {
+                if (distance != null) stats.addValue(distance);
+            }
         }
         return stats;
     }

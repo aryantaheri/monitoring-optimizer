@@ -23,6 +23,10 @@ public class TrafficFlowStats {
         }
     }
 
+    public int getFlowCount(){
+        return flows.size();
+    }
+
     public String getFactsString(){
         StringBuilder builder = new StringBuilder();
         builder.append("\n TrafficFlowFacts: ");
