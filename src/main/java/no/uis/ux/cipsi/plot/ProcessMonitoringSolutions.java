@@ -43,16 +43,21 @@ public class ProcessMonitoringSolutions {
     private static Map<String, List<Point<Number>>> hostCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
     private static Map<String, List<Point<Number>>> hostReuseDataPointMap = new TreeMap<String, List<Point<Number>>>();
 
+    private static Map<String, List<Point<Number>>> swHostDistanceDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> hostSwDistanceDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
     private static Map<String, List<Point<Number>>> solutionHardCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
     private static Map<String, List<Point<Number>>> solutionSoftCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
 
     private static final double BOX_WIDTH = 0.15;
 
     public static void main(String[] args) {
-        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-07_150528/";
+        //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-07_150528/";
+        //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-09_172929-120min-good-k8/";
+        String dir = "/home/aryan/University/DC/Monitoring/data/2015-04-09_172929-120min-good-k8/";
         loadSolutions(dir);
         prepareDataSets();
-        plotDataSets("/tmp");
+        plotDataSets(dir);
     }
 
     private static void loadSolutions(String dirPath) {
@@ -96,8 +101,8 @@ public class ProcessMonitoringSolutions {
             int x = getXIndex(statsMap.keySet(), inputSolutionEntry.getKey());
             for (Entry<String, MonitoringStats> lsSolutionEntry : inputSolutionEntry.getValue().entrySet()) {
                 double xOffset = getXOffset(lsSolutionEntry.getKey());
-
                 MonitoringStats stats = lsSolutionEntry.getValue();
+
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getMonitoringSwitchesNum(), swCountDataPointMap);
 
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getSwitchCountInLayer(TYPE.EDGE), swEdgeCountDataPointMap);
@@ -113,11 +118,13 @@ public class ProcessMonitoringSolutions {
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getHostStats().getMonitoringHostNum(), hostCountDataPointMap);
                 PlotUtils.addDataPointsWithMinMax(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getHostStats().getReuseStats(), hostReuseDataPointMap);
 
+                PlotUtils.addDataPointsWithMinMax(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchHostStats().getSwitchHostDistanceStats(), swHostDistanceDataPointMap);
+                PlotUtils.addDataPointsWithMinMax(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchHostStats().getHostSwitchDistanceStats(), hostSwDistanceDataPointMap);
+
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getHardScore().doubleValue(), solutionHardCostDataPointMap);
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getSoftScore().doubleValue(), solutionSoftCostDataPointMap);
             }
         }
-
     }
 
     private static void plotDataSets(String plotDir) {
@@ -158,6 +165,13 @@ public class ProcessMonitoringSolutions {
                 + getXTicLabels(), "#Reuse", hostReuseDataPointMap);
         plots.add(plot);
 
+        plot = Plotter.plotBoxWithMinMax(plotDir, "", "MonSwHostDistance.eps", "Distance Between Monitoring Switch and Host", "Inputs\\n"
+                + getXTicLabels(), "Distance", swHostDistanceDataPointMap);
+        plots.add(plot);
+
+        plot = Plotter.plotBoxWithMinMax(plotDir, "", "MonHostSwDistance.eps", "Distance Between Monitoring Host and Switch", "Inputs\\n"
+                + getXTicLabels(), "Distance", hostSwDistanceDataPointMap);
+        plots.add(plot);
 
         Plotter.plotMultipleBoxPlots(plotDir, "", "all.eps", getXTicLabels(), plots);
     }
@@ -192,6 +206,7 @@ public class ProcessMonitoringSolutions {
         }
 
         return xtics.toString();
+        //        return "";
     }
 
     private static String getXTicLabelsInGnuPlot() {
