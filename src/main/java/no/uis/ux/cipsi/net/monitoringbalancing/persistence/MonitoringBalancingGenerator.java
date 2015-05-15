@@ -99,14 +99,18 @@ public class MonitoringBalancingGenerator {
         if (!TrafficFlowDistributionUtil.distributionExists(configs)){
             TrafficFlowDistributionUtil.addFlows(configs, trafficFlows);
         }
-        logger.debug("monitoringSwitches[{}] {}", monitoringSwitches.size(), monitoringSwitches);
-        logger.debug("monitoringHosts[{}] {}", monitoringHosts.size(), monitoringHosts);
-        logger.debug("flows[{}]", trafficFlows.size());
+        logger.debug("monitoringSwitches[#={}]", monitoringSwitches.size());
+        logger.debug("monitoringHosts[#={}]", monitoringHosts.size());
+
+        logger.trace("monitoringSwitches[#={}] {}", monitoringSwitches.size(), monitoringSwitches);
+        logger.trace("monitoringHosts[#={}] {}", monitoringHosts.size(), monitoringHosts);
+        logger.debug("flows[#={}]", trafficFlows.size());
         for (TrafficFlow trafficFlow : trafficFlows) {
             logger.trace("flow {}", trafficFlow);
         }
         List<Host> hosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
-        logger.info("Hosts[{}] {}", hosts.size(), hosts);
+        logger.debug("Hosts[#={}]", hosts.size());
+        logger.trace("Hosts[{}] {}", hosts.size(), hosts);
 
         MonitoringBalance monitoringBalance = new MonitoringBalance(topology, algo, configs, monitoringSwitches, monitoringHosts, trafficFlows);
 
