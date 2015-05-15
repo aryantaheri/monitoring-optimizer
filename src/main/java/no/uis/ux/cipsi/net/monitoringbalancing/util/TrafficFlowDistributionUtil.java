@@ -35,6 +35,14 @@ public class TrafficFlowDistributionUtil {
         }
     }
 
+    /**
+     * Note that this only save the distribution up to src/dst host level.
+     * If flows are more granular we're screwed.
+     * @param src
+     * @param dst
+     * @param cnf
+     * @return
+     */
     public static Boolean flowExists(Host src, Host dst, Configs cnf){
         Map<String, List<String>> srcDstMap = getDistribution(cnf);
         if (srcDstMap == null){
