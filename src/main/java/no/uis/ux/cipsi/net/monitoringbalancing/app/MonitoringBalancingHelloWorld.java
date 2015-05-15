@@ -15,6 +15,7 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 import no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalancingGenerator;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
 
 import org.apache.commons.collections15.map.HashedMap;
 import org.optaplanner.core.api.solver.Solver;
@@ -29,7 +30,9 @@ public class MonitoringBalancingHelloWorld {
 
         // Load a problem
         boolean includeMonitoringHostAsTrafficEndpoint = false;
-        MonitoringBalance unsolvedMonitoringBalance = new MonitoringBalancingGenerator().createMonitoringBalance(Configs.getDefaultConfigs(), includeMonitoringHostAsTrafficEndpoint);
+        Configs configs = Configs.getDefaultConfigs();
+        configs.putConfig(ConfigName.TOPOLOGY_KPORT, "4");
+        MonitoringBalance unsolvedMonitoringBalance = new MonitoringBalancingGenerator().createMonitoringBalance(configs, includeMonitoringHostAsTrafficEndpoint);
 
         // Solve the problem
         solver.solve(unsolvedMonitoringBalance);
