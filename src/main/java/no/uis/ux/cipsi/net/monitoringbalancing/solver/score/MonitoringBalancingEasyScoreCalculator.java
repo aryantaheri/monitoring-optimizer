@@ -85,7 +85,7 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
         double hardScore = 0;
         for (Entry<WeightedLink, Double> linkEntry : linkUsageMap.entrySet()) {
             if (linkEntry.getValue() > linkEntry.getKey().getSpeed()){
-                hardScore +=  (linkEntry.getKey().getSpeed() - linkEntry.getValue());
+                hardScore +=  (linkEntry.getKey().getSpeed() - linkEntry.getKey().getUsage() - linkEntry.getValue());
             }
         }
         return hardScore;

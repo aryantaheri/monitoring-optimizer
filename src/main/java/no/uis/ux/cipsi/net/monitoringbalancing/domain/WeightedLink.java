@@ -12,7 +12,7 @@ public class WeightedLink implements Serializable{
     double switchCost;
 
     public static final double DEFAULT_LINK_SPEED = Math.pow(10, 9); // 1Gbps
-    public static final int DEFAULT_LINK_UTILIZATION = 30;
+    public static final int DEFAULT_LINK_UTILIZATION = 0;
     public static final int DEFAULT_LINK_COST = 10;
     public static double DEFAULT_POD_SENSITIVITY = 1;
 
@@ -33,6 +33,23 @@ public class WeightedLink implements Serializable{
     public double getPodSensitivity() {
         return podSensitivity;
     }
+
+    /**
+     *
+     * @return The percentage of the link utilization
+     */
+    public int getUtilizationPercentage() {
+        return utilization;
+    }
+
+    /**
+     * The utilization*speed/100
+     * @return The amount of bandwidth used on this link.
+     */
+    public double getUsage() {
+        return speed*utilization/100;
+    }
+
     /**
      * SwitchCost = (speed/flowRate)*distance*podSensitivity*LinksCost
      * LinkCost = SwitchCost/((speed/flowRate)*podSensitivity)
