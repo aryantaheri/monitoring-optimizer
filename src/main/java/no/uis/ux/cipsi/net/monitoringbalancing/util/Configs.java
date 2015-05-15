@@ -83,9 +83,9 @@ public class Configs implements Serializable{
         configs.putConfig(ConfigName.LINK_COST_POD_SENSITIVITY, "1");
         configs.putConfig(ConfigName.MONITORING_HOST_COST, "1000");
         configs.putConfig(ConfigName.FLOW_RATE, "100000000");
-        configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.01");
-        configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
-        configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.01");
+        configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.0000001");
+        configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.00001");
+        configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.0011");
         return configs;
     }
     @Override
