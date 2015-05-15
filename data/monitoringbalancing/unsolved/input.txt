@@ -1,2 +1,0 @@
-#input params go here
-monitoring_host.cost = 1000

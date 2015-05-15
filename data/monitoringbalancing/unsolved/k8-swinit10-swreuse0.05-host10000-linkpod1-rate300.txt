@@ -1,6 +1,0 @@
-topology.kport = 8
-sw.init_cost = 10
-sw.perflow_reuse_cost_ratio = 0.05
-monitoring_host.cost = 10000
-link.cost_pod_sensitivity = 1
-flow.rate = 300
