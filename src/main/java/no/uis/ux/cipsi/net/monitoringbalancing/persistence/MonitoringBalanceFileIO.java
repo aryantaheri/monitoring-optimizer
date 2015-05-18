@@ -69,7 +69,7 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
         writeStats(solution, new File(outputSolutionFile.getAbsoluteFile()+"-stats.txt"));
     }
 
-    private void writeStats(Solution solution, File file) {
+    public static void writeStats(Solution solution, File file) {
         PrintWriter writer = null;
         try {
             MonitoringStats stats = MonitoringStatsManager.getStats((MonitoringBalance) solution);
