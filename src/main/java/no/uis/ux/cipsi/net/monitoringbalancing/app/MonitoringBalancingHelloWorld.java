@@ -1,7 +1,9 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.app;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +15,7 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch.TYPE;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalanceFileIO;
 import no.uis.ux.cipsi.net.monitoringbalancing.persistence.MonitoringBalancingGenerator;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
@@ -44,8 +47,9 @@ public class MonitoringBalancingHelloWorld {
         MonitoringBalance solvedMonitoringBalance = (MonitoringBalance) solver.getBestSolution();
 
         // Display the result
-        System.out.println("\nSolved monitoringBalance :\n"
-                + toDisplayString(solvedMonitoringBalance));
+        //        System.out.println("\nSolved monitoringBalance :\n"
+        //                + toDisplayString(solvedMonitoringBalance));
+        MonitoringBalanceFileIO.writeStats(solvedMonitoringBalance, new File("/tmp/monitoring-balance-stats-"+new Date().getTime()+".txt"));
     }
 
     public static String toDisplayString(MonitoringBalance monitoringBalance) {
