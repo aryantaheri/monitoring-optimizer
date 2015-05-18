@@ -74,14 +74,14 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
     @Override
     public void beforeVariableChanged(Object entity, String variableName) {
         // TODO: include variableName and limit the change domain
-        log.debug("beforeVariableChanged e={}, variableName={}", entity, variableName);
+        //        log.debug("beforeVariableChanged e={}, variableName={}", entity, variableName);
         retract((TrafficFlow) entity);
     }
 
     @Override
     public void afterVariableChanged(Object entity, String variableName) {
         // TODO: include variableName and limit the change domain
-        log.debug("afterVariableChanged e={}, variableName={}", entity, variableName);
+        //        log.debug("afterVariableChanged e={}, variableName={}", entity, variableName);
         insert((TrafficFlow) entity);
     }
 
