@@ -9,9 +9,13 @@
   <!-- Score configuration -->
   <scoreDirectorFactory>
     <scoreDefinitionType>HARD_SOFT</scoreDefinitionType>
+    <!-- 
     <easyScoreCalculatorClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.score.MonitoringBalancingEasyScoreCalculator</easyScoreCalculatorClass>
+     -->
     <!--<easyScoreCalculatorClass>org.optaplanner.examples.cloudbalancing.solver.score.CloudBalancingMapBasedEasyScoreCalculator</easyScoreCalculatorClass>-->
-    <!--<incrementalScoreCalculatorClass>org.optaplanner.examples.cloudbalancing.solver.score.CloudBalancingIncrementalScoreCalculator</incrementalScoreCalculatorClass>-->
+    <!--
+    -->
+    <incrementalScoreCalculatorClass>no.uis.ux.cipsi.net.monitoringbalancing.solver.score.IncrementalScoreCalculator</incrementalScoreCalculatorClass>
     <!--<scoreDrl>org/optaplanner/examples/monitoringbalancing/solver/monitoringbalancingScoreRules.drl</scoreDrl> -->
     <initializingScoreTrend>ONLY_DOWN</initializingScoreTrend>
     <!--<assertionScoreDirectorFactory>-->
@@ -25,7 +29,7 @@
     <minutesSpentLimit>1</minutesSpentLimit>-->
   <!--</termination>-->
   <termination>
-  	<secondsSpentLimit>600</secondsSpentLimit>
+  	<secondsSpentLimit>30</secondsSpentLimit>
   </termination>
   <constructionHeuristic>
     <queuedEntityPlacer>
