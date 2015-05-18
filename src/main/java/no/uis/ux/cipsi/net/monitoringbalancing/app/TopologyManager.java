@@ -57,6 +57,10 @@ public class TopologyManager {
 
     public static List<WeightedLink> getRandomShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst, int k){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
+        if (src == null || dst == null){
+            log.error("getRandomShortestPath src={} or dst={} is null", src, dst);
+            return null;
+        }
         List<List<WeightedLink>> paths = getKShortestPaths(topo, configs, src, dst, k);
         if (paths.size() < k){
             log.trace("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than K {}. Choosing #AvailablePaths {}", src, dst, paths.size(), k, Math.min(paths.size(), k));
@@ -68,6 +72,10 @@ public class TopologyManager {
 
     public static List<WeightedLink> getShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
+        if (src == null || dst == null){
+            log.error("getRandomShortestPath src={} or dst={} is null", src, dst);
+            return null;
+        }
         List<List<WeightedLink>> paths = getKShortestPaths(topo, configs, src, dst, 1);
         if (paths.size() < 1){
             log.error("getRandomShortestPath(src={}, dst={}) #AvailablePaths {} is less than 1. returning", src, dst, paths.size());
@@ -84,6 +92,10 @@ public class TopologyManager {
         //        }
         //        List<List<WeightedLink>> paths = yenKShortestPathsAlgo.getShortestPaths(src, dst, k);
         //        AlgoCache.mergePaths(yenKShortestPathsAlgo, src, dst, paths);
+        if (src == null || dst == null){
+            log.error("getRandomShortestPath src={} or dst={} is null", src, dst);
+            return null;
+        }
         List<List<WeightedLink>> paths = null;
         try {
             int kPort = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
