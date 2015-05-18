@@ -58,7 +58,7 @@ public class NumericPathFinder {
         HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
 
         int k = 8;
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
 
@@ -95,7 +95,7 @@ public class NumericPathFinder {
 
         HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
 
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
 
@@ -142,7 +142,7 @@ public class NumericPathFinder {
         HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
 
         int k = 4;
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
 
@@ -179,7 +179,7 @@ public class NumericPathFinder {
 
     public static void test(String[] args) throws Exception {
         int k = 4;
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
         for (int i = 1; i <= k*k*k/4; i++) {

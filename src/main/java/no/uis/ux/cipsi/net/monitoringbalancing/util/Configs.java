@@ -75,17 +75,25 @@ public class Configs implements Serializable{
         return stringMap;
     }
 
-    public static Configs getDefaultConfigs(){
+    public static Configs getDefaultConfigs(int kPort){
         Configs configs = new Configs();
-        configs.putConfig(ConfigName.TOPOLOGY_KPORT, "4");
         configs.putConfig(ConfigName.SWITCH_INIT_COST, "10");
         configs.putConfig(ConfigName.SWITCH_PERFLOW_REUSE_COST_RATIO, "0.05");
         configs.putConfig(ConfigName.LINK_COST_POD_SENSITIVITY, "1");
         configs.putConfig(ConfigName.MONITORING_HOST_COST, "1000");
         configs.putConfig(ConfigName.FLOW_RATE, "100000000");
-        configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.0000001");
-        configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.00001");
-        configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.0011");
+
+        configs.putConfig(ConfigName.TOPOLOGY_KPORT, "" + kPort);
+        if (kPort > 32) {
+            configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.0000001");
+            configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.00001");
+            configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.0011");
+        } else {
+            configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.001");
+            configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
+            configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.01");
+
+        }
         return configs;
     }
     @Override
@@ -94,7 +102,7 @@ public class Configs implements Serializable{
     }
 
     public static Map<String, String> getWildCardMapStrings() {
-        Configs cnf = getDefaultConfigs();
+        Configs cnf = getDefaultConfigs(4);
         Map<String, String> stringMap = new TreeMap<String, String>();
         for (Entry<ConfigName, String> entry : cnf.getConfigMap().entrySet()) {
             stringMap.put(entry.getKey().toString(), "*");

@@ -30,8 +30,13 @@ public class MonitoringBalancingHelloWorld {
 
         // Load a problem
         boolean includeMonitoringHostAsTrafficEndpoint = false;
-        Configs configs = Configs.getDefaultConfigs();
+        Configs configs = Configs.getDefaultConfigs(4);
         configs.putConfig(ConfigName.TOPOLOGY_KPORT, "4");
+
+        configs.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.01");
+        configs.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
+        configs.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.1");
+
         MonitoringBalance unsolvedMonitoringBalance = new MonitoringBalancingGenerator().createMonitoringBalance(configs, includeMonitoringHostAsTrafficEndpoint);
 
         // Solve the problem

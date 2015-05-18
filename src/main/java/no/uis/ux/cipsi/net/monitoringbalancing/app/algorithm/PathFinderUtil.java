@@ -35,7 +35,7 @@ public class PathFinderUtil {
 
     public static void main(String[] args) {
         int k = 4;
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
         setNumericPathsMap(topo, k);
@@ -49,7 +49,7 @@ public class PathFinderUtil {
 
         HashMap<Node, HashMap<Node, List<List<WeightedLink>>>> numericPathsMap = new HashMap<Node, HashMap<Node,List<List<WeightedLink>>>>();
 
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(k);
         cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+k);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
         Yen<Node, WeightedLink> yen = new Yen<Node, WeightedLink>(topo,

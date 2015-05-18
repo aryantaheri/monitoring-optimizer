@@ -32,7 +32,7 @@ public class MonitoringBalancingGenerator {
 
     public static void main(String[] args) {
         boolean includeMonitoringHostAsTrafficEndpoint = false;
-        Configs cnf = Configs.getDefaultConfigs();
+        Configs cnf = Configs.getDefaultConfigs(4);
         cnf.putConfig(ConfigName.FLOW_INTER_POD_PROB, "0.001");
         cnf.putConfig(ConfigName.FLOW_INTRA_POD_PROB, "0.01");
         cnf.putConfig(ConfigName.FLOW_INTRA_EDGE_PROB, "0.1");

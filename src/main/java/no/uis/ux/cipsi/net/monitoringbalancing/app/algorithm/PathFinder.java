@@ -24,8 +24,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class PathFinder {
     public static void main(String[] args) throws Exception {
-        Configs cnf = Configs.getDefaultConfigs();
-        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, "48");
+        int kPort = 48;
+        Configs cnf = Configs.getDefaultConfigs(kPort);
+        cnf.putConfig(ConfigName.TOPOLOGY_KPORT, ""+kPort);
         Graph<Node, WeightedLink> topo = TopologyManager.buildTopology(cnf);
 
         new PathFinder().findPaths(topo);
