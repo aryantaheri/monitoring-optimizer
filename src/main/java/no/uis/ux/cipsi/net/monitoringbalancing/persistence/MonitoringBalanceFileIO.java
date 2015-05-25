@@ -81,6 +81,8 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
             writer.println("----------------------------");
             writer.println("Solution Problems Facts:");
             writer.println(solution.getProblemFacts());
+            writer.println("Topology Configs: ");
+            writer.println(((MonitoringBalance) solution).getConfigs());
 
             writer.println("----------------------------");
             writer.println("Monitoring Stats:");
