@@ -54,6 +54,9 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
         configs = workingSolution.getConfigs();
         topology = workingSolution.getTopology();
 
+        hardScore = 0;
+        softScore = 0;
+
         List<TrafficFlow> trafficFlows = workingSolution.getTrafficFlows();
         for (TrafficFlow trafficFlow : trafficFlows) {
             insert(trafficFlow);
@@ -178,7 +181,9 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
         }
         //        log.debug("calculateMonitoringResourceUsage trafficFlow={} missing monitoringSwitch={} or monitoringHost={}", trafficFlow, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost());
         // FIXME: This is wrong, inserting a flow with the path P1, and retracting the flow with the path P2
-        List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
+        // List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
+        // This should solve the problem. The ASSERT function of opta-planner can be used to verify.
+        List<WeightedLink> path = TopologyManager.getDeterministicShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4, trafficFlow);
         trafficFlow.setMonitoringSwitchHostPath(path);
 
         calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD, added);
