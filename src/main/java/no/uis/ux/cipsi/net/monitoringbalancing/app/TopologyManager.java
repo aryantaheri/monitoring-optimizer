@@ -13,6 +13,7 @@ import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch.TYPE;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs.ConfigName;
@@ -54,6 +55,21 @@ public class TopologyManager {
     //        yenKShortestPathsAlgo = new Yen<Node, WeightedLink>(topology, weightTransformer);
     //    }
 
+
+    public static List<WeightedLink> getDeterministicShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst, int k, TrafficFlow flow) {
+        if (src == null || dst == null){
+            log.error("getDeterministicShortestPath src={} or dst={} is null", src, dst);
+            return null;
+        }
+        List<List<WeightedLink>> paths = getKShortestPaths(topo, configs, src, dst, k);
+        if (paths.size() < k){
+            log.trace("getDeterministicShortestPath(src={}, dst={}) #AvailablePaths {} is less than K {}. Choosing #AvailablePaths {}", src, dst, paths.size(), k, Math.min(paths.size(), k));
+        }
+        int flowHashCode = flowHashCode(flow);
+        int deterministicIndex = Math.abs(flowHashCode) % Math.min(paths.size(), k);
+        return paths.get(deterministicIndex);
+
+    }
 
     public static List<WeightedLink> getRandomShortestPath(Graph<Node, WeightedLink> topo, Configs configs, Node src, Node dst, int k){
         //        log.debug("getRandomShortestPath src={} dst={} k={}", src, dst, k);
@@ -285,4 +301,24 @@ public class TopologyManager {
         return hosts;
     }
 
+    private static int flowHashCode(TrafficFlow flow) {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((flow.getDstIp() == null) ? 0 : flow.getDstIp().hashCode());
+        result = prime * result + ((flow.getSrcIp() == null) ? 0 : flow.getSrcIp().hashCode());
+
+        result = prime * result + ((flow.getDstNode() == null) ? 0 : flow.getDstNode().hashCode());
+        result = prime * result + ((flow.getSrcNode() == null) ? 0 : flow.getSrcNode().hashCode());
+
+        result = prime * result + ((flow.getDstPort() == null) ? 0 : flow.getDstPort().hashCode());
+        result = prime * result + ((flow.getSrcPort() == null) ? 0 : flow.getSrcPort().hashCode());
+
+        result = prime * result + ((flow.getProtocol() == null) ? 0 : flow.getProtocol().hashCode());
+
+        long temp;
+        temp = Double.doubleToLongBits(flow.getRate());
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+
+        return result;
+    }
 }
