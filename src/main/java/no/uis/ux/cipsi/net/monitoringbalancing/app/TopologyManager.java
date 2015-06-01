@@ -192,6 +192,7 @@ public class TopologyManager {
                 topology.addVertex(edgeSw);
 
                 boolean monitoringHostCreated = false;
+
                 // Connect edge to aggrs
                 for (int k = 0; k < kPort/2; k++) {
                     links++;
@@ -204,19 +205,35 @@ public class TopologyManager {
                     Host host;
                     if (!monitoringHostCreated){
                         host = new MonitoringHost("host"+hosts, monitoringHostCost);
+
+                        host.setPodIndex(i);
+                        host.setEdgeIndex(j);
+                        host.setHostIndex(hosts);
+                        topology.addVertex(host);
+
+                        // Create links for monitoringHost with 0% utilization
+                        links++;
+                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost, 0), edgeSw, host);
+                        links++;
+                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost, 0), host, edgeSw);
+
                         monitoringHostCreated = true;
+
                     } else {
                         host = new Host("host"+hosts);
-                    }
-                    host.setPodIndex(i);
-                    host.setEdgeIndex(j);
-                    host.setHostIndex(hosts);
-                    topology.addVertex(host);
 
-                    links++;
-                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), edgeSw, host);
-                    links++;
-                    topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), host, edgeSw);
+                        host.setPodIndex(i);
+                        host.setEdgeIndex(j);
+                        host.setHostIndex(hosts);
+                        topology.addVertex(host);
+
+                        // Create links for host with default utilization
+                        links++;
+                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), edgeSw, host);
+                        links++;
+                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost), host, edgeSw);
+                    }
+
                 }
 
             }
