@@ -24,7 +24,6 @@ import edu.uci.ics.jung.graph.Graph;
 public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<MonitoringBalance> {
 
     private static Logger log = LoggerFactory.getLogger(IncrementalScoreCalculator.class);
-    private static final float TUNNELLING_OVERHEAD = 0.2f;
     private Map<WeightedLink, Double> linkUsageMap;
     private Map<Switch, Double> switchFabricUsageMap;
     private Map<Switch, Double> switchForwardingUsageMap;
@@ -186,7 +185,7 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
         List<WeightedLink> path = TopologyManager.getDeterministicShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4, trafficFlow);
         trafficFlow.setMonitoringSwitchHostPath(path);
 
-        calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD, added);
+        calculateTrafficFlowLinkUsage(trafficFlow, path, WeightedLink.DEFAULT_TUNNELLING_BANDWIDTH_OVERHEAD, added);
         calculateTrafficFlowSwitchUsage(trafficFlow, path, added);
         calculateTrafficFlowHostUsage(trafficFlow, path, added);
 

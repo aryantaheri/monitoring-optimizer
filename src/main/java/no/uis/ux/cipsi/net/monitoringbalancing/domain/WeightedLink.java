@@ -16,6 +16,10 @@ public class WeightedLink implements Serializable{
     public static final int DEFAULT_LINK_COST = 10;
     public static double DEFAULT_POD_SENSITIVITY = 1;
 
+    // 20% for overhead is too much, VXLAN ~ 6% and GRE even less
+    public static final float DEFAULT_TUNNELLING_BANDWIDTH_OVERHEAD  = 0.06f;
+
+
     public WeightedLink(String id, double podSensitivity, double switchCost) {
         this.id = id;
         this.speed = DEFAULT_LINK_SPEED;

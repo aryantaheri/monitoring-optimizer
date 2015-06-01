@@ -25,7 +25,6 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculator<MonitoringBalance> {
     private static Logger log = LoggerFactory.getLogger(MonitoringBalancingEasyScoreCalculator.class);
-    private static final float TUNNELLING_OVERHEAD = 0.2f;
     private Map<WeightedLink, Double> linkUsageMap;
     private Map<Switch, Double> switchFabricUsageMap;
     private Map<Switch, Double> switchForwardingUsageMap;
@@ -127,7 +126,7 @@ public class MonitoringBalancingEasyScoreCalculator implements EasyScoreCalculat
         List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, trafficFlow.getMonitoringSwitch(), trafficFlow.getMonitoringHost(), 4);
         trafficFlow.setMonitoringSwitchHostPath(path);
 
-        calculateTrafficFlowLinkUsage(trafficFlow, path, TUNNELLING_OVERHEAD);
+        calculateTrafficFlowLinkUsage(trafficFlow, path, WeightedLink.DEFAULT_TUNNELLING_BANDWIDTH_OVERHEAD);
         calculateTrafficFlowSwitchUsage(trafficFlow, path);
         calculateTrafficFlowHostUsage(trafficFlow, path);
 
