@@ -25,6 +25,14 @@ public class WeightedLink implements Serializable{
         this.switchCost = switchCost;
     }
 
+    public WeightedLink(String id, double podSensitivity, double switchCost, int utilization) {
+        this.id = id;
+        this.speed = DEFAULT_LINK_SPEED;
+        this.utilization = utilization;
+        this.cost = DEFAULT_LINK_COST;
+        this.podSensitivity = podSensitivity;
+        this.switchCost = switchCost;
+    }
 
     public double getSpeed() {
         return speed;
