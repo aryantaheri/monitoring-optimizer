@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 public class WeightedLink implements Serializable{
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    //    private static final long serialVersionUID = -8678664985734409311l;
     String id;
     double speed;  // bps
     int utilization;    // Link utilization %
