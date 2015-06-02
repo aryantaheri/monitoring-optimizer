@@ -24,6 +24,8 @@ public class MonitoringSwitchStats {
     int aggrSwMonReuse = 0;
     int edgeSwMonReuse = 0;
 
+    int nullSwitches = 0;
+
     Map<Switch, Integer> monitoringSwitchUsage = null;
     DescriptiveStatistics initCostStats;
     DescriptiveStatistics perFlowReuseCostRatioStats;
@@ -33,6 +35,7 @@ public class MonitoringSwitchStats {
     public MonitoringSwitchStats(
             int onPathMonitoringSwitches,
             int flowNum,
+            int nullSwitches,
             Map<Switch, Integer> monitoringSwitchUsage ) {
         this.onPathMonitoringSwitches = onPathMonitoringSwitches;
         this.flowNum = flowNum;
@@ -47,6 +50,7 @@ public class MonitoringSwitchStats {
         this.aggrSwMonReuse = getSwitchReuseInLayer(TYPE.AGGREGATION);
         this.edgeSwMonReuse = getSwitchReuseInLayer(TYPE.EDGE);
 
+        this.nullSwitches = nullSwitches;
         this.monitoringSwitchesNum = monitoringSwitchUsage.size();
         initStats();
     }
@@ -55,6 +59,7 @@ public class MonitoringSwitchStats {
         initCostStats = new DescriptiveStatistics();
         perFlowReuseCostRatioStats = new DescriptiveStatistics();
         swReuseStats = new DescriptiveStatistics();
+        nullSwitches = monitoringSwitchUsage.get(null);
         for (Switch sw : monitoringSwitchUsage.keySet()) {
             initCostStats.addValue(sw.getInitCost());
             perFlowReuseCostRatioStats.addValue(sw.getPerFlowReuseCostRatio());
@@ -131,6 +136,7 @@ public class MonitoringSwitchStats {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("\n #MonitoringSwitches: ").append(monitoringSwitchesNum)
+        .append(" / #NullSwitches: ").append(nullSwitches)
         .append("\n   MonitoringSwitchesLayer: ")
         .append("\n     ").append(coreSwMonNum).append("-Core ").append("reuse: ").append(coreSwMonReuse)
         .append("\n     ").append(aggrSwMonNum).append("-Aggr ").append("reuse: ").append(aggrSwMonReuse)

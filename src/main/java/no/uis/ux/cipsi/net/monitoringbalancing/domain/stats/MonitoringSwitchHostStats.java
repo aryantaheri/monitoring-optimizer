@@ -8,27 +8,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
+import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.TrafficFlow;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.WeightedLink;
+import no.uis.ux.cipsi.net.monitoringbalancing.util.Configs;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.uci.ics.jung.graph.Graph;
 
 public class MonitoringSwitchHostStats {
+
+    private static Logger log = LoggerFactory.getLogger(MonitoringSwitchHostStats.class);
 
     Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap;
     Map<Switch, Map<MonitoringHost, Integer>> switchHostDistanceMap;
     Map<MonitoringHost, Map<Switch, Integer>> hostSwitchDistanceMap;
     List<List<WeightedLink>> monitoringPaths;
     //    Yen<Node,WeightedLink> algo;
+    Graph<Node,WeightedLink> topology;
+    Configs configs;
     List<TrafficFlow> flows;
+    int nullMonitoringPaths = 0;
 
-    public MonitoringSwitchHostStats(Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap, List<TrafficFlow> flows) {
-        //        this.algo = algo;
+    public MonitoringSwitchHostStats(Graph<Node,WeightedLink> topology, Configs configs, Map<Switch, Set<MonitoringHost>> monitoringSwitchHostMap, List<TrafficFlow> flows) {
         this.monitoringSwitchHostMap = monitoringSwitchHostMap;
         this.monitoringPaths = new ArrayList<List<WeightedLink>>();
         this.flows = flows;
+        this.topology = topology;
+        this.configs = configs;
 
         initDistanceMaps();
     }
@@ -43,8 +56,11 @@ public class MonitoringSwitchHostStats {
             List<WeightedLink> monPath = flow.getMonitoringSwitchHostPath();
             if (monPath == null) {
                 //FIXME This is wrong
-                System.err.println("Monitoring Path is NULL flow=" + flow);
-                continue;
+                log.error("Monitoring Path is NULL flow={}", flow);
+                monPath = TopologyManager.getDeterministicShortestPath(topology, configs, sw, host, 4, flow);
+                flow.setMonitoringSwitchHostPath(monPath);
+
+                nullMonitoringPaths++;
             }
             addToMap(hostSwitchDistanceMap, host, sw, monPath.size());
             addToMap(switchHostDistanceMap, sw, host, monPath.size());
@@ -73,6 +89,8 @@ public class MonitoringSwitchHostStats {
     private String getSwitchMapString() {
         StringBuilder builder = new StringBuilder();
         builder.append("\n Switch-Host Mapping:");
+        builder.append("\n NullPaths:").append(nullMonitoringPaths);
+
         for (Entry<Switch, Set<MonitoringHost>> switchEntry : monitoringSwitchHostMap.entrySet()) {
             DescriptiveStatistics s = getDistanceStats(switchEntry.getKey(), switchEntry.getValue());
             builder.append("\n  ").append(switchEntry.getKey()).append(" -> ").append(switchEntry.getValue())
@@ -90,6 +108,8 @@ public class MonitoringSwitchHostStats {
         Map<MonitoringHost, Set<Switch>> hostSwitchMap = getHostSwitchMap();
         StringBuilder builder = new StringBuilder();
         builder.append("\n Host-Switch Mapping:");
+        builder.append("\n NullPaths:").append(nullMonitoringPaths);
+
         for (Entry<MonitoringHost, Set<Switch>> hostEntry : hostSwitchMap.entrySet()) {
             DescriptiveStatistics s = getDistanceStats(hostEntry.getKey(), hostEntry.getValue());
             builder.append("\n  ").append(hostEntry.getKey()).append(" -> ").append(hostEntry.getValue())

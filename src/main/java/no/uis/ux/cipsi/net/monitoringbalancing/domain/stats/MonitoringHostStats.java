@@ -15,12 +15,15 @@ public class MonitoringHostStats {
     DescriptiveStatistics costStats;
     DescriptiveStatistics reuseStats;
 
-    public MonitoringHostStats(int flowNum,
+    int nullHosts = 0;
+
+    public MonitoringHostStats(int flowNum, int nullHosts,
             Map<MonitoringHost, Integer> monitoringHostUsage) {
 
         this.flowNum = flowNum;
         this.monitoringHostUsage = new TreeMap<MonitoringHost, Integer>(new NodeComparator());
         this.monitoringHostUsage.putAll(monitoringHostUsage);
+        this.nullHosts = nullHosts;
         initStats();
     }
 
@@ -60,7 +63,8 @@ public class MonitoringHostStats {
 
     public String getDetailedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\n #MonitoringHosts: ").append(monitoringHostUsage.size());
+        builder.append("\n #MonitoringHosts: ").append(monitoringHostUsage.size())
+        .append(" / #NullHosts: ").append(nullHosts);
         builder.append("\n Monitoring Hosts Details: ");
         for (Entry<MonitoringHost, Integer> hostEntry : monitoringHostUsage.entrySet()) {
             builder.append("\n  ").append(hostEntry.getKey()).append(" reuse: ").append(hostEntry.getValue());
@@ -71,7 +75,8 @@ public class MonitoringHostStats {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\n #MonitoringHosts: ").append(monitoringHostUsage.size());
+        builder.append("\n #MonitoringHosts: ").append(monitoringHostUsage.size())
+        .append(" / #NullHosts: ").append(nullHosts);
 
         return builder.toString();
     }

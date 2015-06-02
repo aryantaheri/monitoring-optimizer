@@ -105,6 +105,24 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
         }
     }
 
+    public static Solution readSolution(File solutionOutputObj){
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(solutionOutputObj));
+            MonitoringBalance solution = (MonitoringBalance) ois.readObject();
+            return solution;
+        } catch (Exception e) {
+            log.error("readSolution", e);
+        } finally {
+            try {
+                if (ois != null) ois.close();
+            } catch (IOException e) {
+                log.error("readSolution", e);
+            }
+        }
+        return null;
+    }
+
     public static MonitoringStats readStats(File solutionOutputObj){
         ObjectInputStream ois = null;
         try {
