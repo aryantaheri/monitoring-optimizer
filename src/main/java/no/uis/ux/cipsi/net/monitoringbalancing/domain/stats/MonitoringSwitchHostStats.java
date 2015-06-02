@@ -54,6 +54,10 @@ public class MonitoringSwitchHostStats {
             Switch sw = flow.getMonitoringSwitch();
             MonitoringHost host = flow.getMonitoringHost();
             List<WeightedLink> monPath = flow.getMonitoringSwitchHostPath();
+
+            if (sw == null || host == null){
+                continue;
+            }
             if (monPath == null) {
                 //FIXME This is wrong
                 log.error("Monitoring Path is NULL flow={}", flow);
@@ -62,6 +66,7 @@ public class MonitoringSwitchHostStats {
 
                 nullMonitoringPaths++;
             }
+
             addToMap(hostSwitchDistanceMap, host, sw, monPath.size());
             addToMap(switchHostDistanceMap, sw, host, monPath.size());
             monitoringPaths.add(monPath);
