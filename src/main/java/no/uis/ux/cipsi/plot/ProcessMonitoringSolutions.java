@@ -49,12 +49,18 @@ public class ProcessMonitoringSolutions {
     private static Map<String, List<Point<Number>>> solutionHardCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
     private static Map<String, List<Point<Number>>> solutionSoftCostDataPointMap = new TreeMap<String, List<Point<Number>>>();
 
+    private static Map<String, List<Point<Number>>> nullSwDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> nullHostDataPointMap = new TreeMap<String, List<Point<Number>>>();
+    private static Map<String, List<Point<Number>>> nullPathDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
+    private static Map<String, List<Point<Number>>> flowCountDataPointMap = new TreeMap<String, List<Point<Number>>>();
+
     private static final double BOX_WIDTH = 0.15;
 
     public static void main(String[] args) {
         //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-07_150528/";
         //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-09_172929-120min-good-k8/";
-        String dir = "/home/aryan/University/DC/Monitoring/data/2015-06-01_211603-480min-k48";
+        String dir = "/home/aryan/University/DC/Monitoring/data/2015-06-03_121514";
         loadSolutions(dir);
         prepareDataSets();
         plotDataSets(dir);
@@ -131,6 +137,13 @@ public class ProcessMonitoringSolutions {
 
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getHardScore().doubleValue(), solutionHardCostDataPointMap);
                 PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getScore().getSoftScore().doubleValue(), solutionSoftCostDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchStats().getNullSwitches(), nullSwDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getHostStats().getNullHosts(), nullHostDataPointMap);
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getSwitchHostStats().getNullMonitoringPaths(), nullPathDataPointMap);
+
+                PlotUtils.addBoxDataPoint(lsSolutionEntry.getKey(), x, xOffset, BOX_WIDTH, stats.getFlowStats().getFlowCount(), flowCountDataPointMap);
+
             }
         }
     }
@@ -179,6 +192,16 @@ public class ProcessMonitoringSolutions {
 
         plot = Plotter.plotBoxWithMinMax(plotDir, "", "MonHostSwDistance.eps", "Distance Between Monitoring Host and Switch", "Inputs\\n"
                 + getXTicLabels(), "Distance", hostSwDistanceDataPointMap);
+        plots.add(plot);
+
+        plot = Plotter.plotBox(plotDir, "", "nullSw.eps", "Null Switches", "Inputs\\n" + getXTicLabels(), "",  "Null Switches", "", nullSwDataPointMap, JavaPlot.Key.TOP_RIGHT);
+        plots.add(plot);
+        plot = Plotter.plotBox(plotDir, "", "nullHost.eps", "Null Hosts", "Inputs\\n" + getXTicLabels(), "",  "Null Hosts", "", nullHostDataPointMap, JavaPlot.Key.TOP_RIGHT);
+        plots.add(plot);
+        plot = Plotter.plotBox(plotDir, "", "nullPaths.eps", "Null Paths (MonSw != null && MonHost != null)", "Inputs\\n" + getXTicLabels(), "",  "Null Paths (MonSw != null && MonHost != null)", "", nullPathDataPointMap, JavaPlot.Key.TOP_RIGHT);
+        plots.add(plot);
+
+        plot = Plotter.plotBox(plotDir, "", "flowCount.eps", "Flow Size", "Inputs\\n" + getXTicLabels(), "",  "Flow Size", "", flowCountDataPointMap, JavaPlot.Key.TOP_RIGHT);
         plots.add(plot);
 
         Plotter.plotMultipleBoxPlots(plotDir, "", "all.eps", getXTicLabels(), plots);

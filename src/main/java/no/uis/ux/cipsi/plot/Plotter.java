@@ -540,7 +540,7 @@ public class Plotter {
         allPlot.set("output", "'" + plotName + "'");
         AutoGraphLayout layout = new AutoGraphLayout();
         layout.setColumns(2);
-        layout.setRows(5);
+        layout.setRows(7);
         allPlot.getPage().setLayout(layout);
         allPlot.set("xzeroaxis", "");
         allPlot.set("style", "fill pattern 1 border");
