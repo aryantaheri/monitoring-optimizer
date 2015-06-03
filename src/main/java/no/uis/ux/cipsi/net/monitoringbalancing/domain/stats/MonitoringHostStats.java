@@ -36,6 +36,10 @@ public class MonitoringHostStats {
         }
     }
 
+    public int getNullHosts() {
+        return nullHosts;
+    }
+
     public int getMonitoringHostNum() {
         return monitoringHostUsage.size();
     }

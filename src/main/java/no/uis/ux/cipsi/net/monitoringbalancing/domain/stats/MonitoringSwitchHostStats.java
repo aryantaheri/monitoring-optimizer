@@ -46,6 +46,10 @@ public class MonitoringSwitchHostStats {
         initDistanceMaps();
     }
 
+    public int getNullMonitoringPaths() {
+        return nullMonitoringPaths;
+    }
+
     private void initDistanceMaps() {
         switchHostDistanceMap = new HashMap<Switch, Map<MonitoringHost,Integer>>();
         hostSwitchDistanceMap = new HashMap<MonitoringHost, Map<Switch,Integer>>();

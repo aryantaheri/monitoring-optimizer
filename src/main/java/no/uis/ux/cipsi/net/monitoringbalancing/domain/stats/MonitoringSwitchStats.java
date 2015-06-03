@@ -67,6 +67,10 @@ public class MonitoringSwitchStats {
         }
     }
 
+    public int getNullSwitches() {
+        return nullSwitches;
+    }
+
     public DescriptiveStatistics getInitCostStats() {
         return initCostStats;
     }
