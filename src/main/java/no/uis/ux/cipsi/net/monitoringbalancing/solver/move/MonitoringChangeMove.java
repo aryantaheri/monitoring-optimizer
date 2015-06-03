@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Switch;
@@ -38,7 +37,7 @@ public class MonitoringChangeMove extends AbstractMove {
     public boolean isMoveDoable(ScoreDirector scoreDirector) {
         //        System.out.println("isMoveDoable " + trafficFlow + " " + toMonitoringSwitch + " " + toMonitoringHost);
         if (toMonitoringHost == null || toMonitoringSwitch == null) return false;
-        boolean isSwitchOnPath = TopologyManager.getSwitchesOnPath(topology, trafficFlow.getPath()).contains(toMonitoringSwitch);
+        boolean isSwitchOnPath = trafficFlow.getOnPathMonitoringSwitches().contains(toMonitoringSwitch);
         boolean equalSwitch = Objects.equals(trafficFlow.getMonitoringSwitch(), toMonitoringSwitch);
         boolean equalHost = Objects.equals(trafficFlow.getMonitoringHost(), toMonitoringHost);
 

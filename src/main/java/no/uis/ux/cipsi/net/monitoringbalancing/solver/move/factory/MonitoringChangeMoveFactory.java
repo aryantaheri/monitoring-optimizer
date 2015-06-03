@@ -3,7 +3,6 @@ package no.uis.ux.cipsi.net.monitoringbalancing.solver.move.factory;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Node;
@@ -28,7 +27,7 @@ public class MonitoringChangeMoveFactory implements MoveListFactory<MonitoringBa
         for (Switch monitoringSwitch : monitoringSwitches) {
             for (MonitoringHost monitoringHost : monitoringHosts) {
                 for (TrafficFlow trafficFlow : solution.getTrafficFlows()) {
-                    if (TopologyManager.isSwitchOnPath(solution.getTopology(), trafficFlow.getPath(), monitoringSwitch)){
+                    if (trafficFlow.getOnPathMonitoringSwitches().contains(monitoringSwitch)){
                         // System.out.println("MonitoringChangeMoveFactory " + trafficFlow + " " + monitoringSwitch + " " + monitoringHost);
                         moveList.add(new MonitoringChangeMove(topology, trafficFlow, monitoringSwitch, monitoringHost));
                     }
