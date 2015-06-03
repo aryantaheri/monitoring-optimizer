@@ -161,6 +161,8 @@ public class MonitoringBalancingGenerator {
                 getHostAddress(dstHost),
                 (short) 80, (short) 80,
                 (short) 22, rate, path, onPathMonitoringSwitches);
+        flow.setMonitoringHost(TopologyManager.getClosestMonitoringHost(topology, flow));
+        flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
         return flow;
     }
 

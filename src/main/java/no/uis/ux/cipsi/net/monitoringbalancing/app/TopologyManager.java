@@ -338,4 +338,28 @@ public class TopologyManager {
 
         return result;
     }
+
+    public static Switch getClosestMonitoringSwitch(Graph<Node, WeightedLink> topology, TrafficFlow flow){
+        List<Switch> onPathSwitches = flow.getOnPathMonitoringSwitches();
+        Switch candidateSw = null;
+        if (onPathSwitches != null && onPathSwitches.size() > 1) {
+            candidateSw = onPathSwitches.get(0);
+        }
+        return candidateSw;
+    }
+
+    public static MonitoringHost getClosestMonitoringHost(Graph<Node, WeightedLink> topology, TrafficFlow flow) {
+        MonitoringHost monitoringHost = null;
+        Switch candidateSw = getClosestMonitoringSwitch(topology, flow);
+        if (candidateSw != null && candidateSw.getType().equals(TYPE.EDGE)) {
+            // CandidateSw is an Edge, and in each edge there should be a MH
+            for (Node node : topology.getNeighbors(candidateSw)) {
+                if (node instanceof MonitoringHost){
+                    monitoringHost = (MonitoringHost) node;
+                    break;
+                }
+            }
+        }
+        return monitoringHost;
+    }
 }
