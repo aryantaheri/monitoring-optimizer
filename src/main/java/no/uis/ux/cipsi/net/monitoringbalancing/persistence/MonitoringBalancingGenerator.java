@@ -1,5 +1,11 @@
 package no.uis.ux.cipsi.net.monitoringbalancing.persistence;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -211,6 +217,39 @@ public class MonitoringBalancingGenerator {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void writeMonitoringBalanceProblem(MonitoringBalance monitoringBalance, File outputProblemFile) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(outputProblemFile));
+            oos.writeObject(monitoringBalance);
+        } catch (IOException e) {
+            logger.error("writeMonitoringBalanceProblem", e);
+        } finally {
+            if (oos != null){
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    logger.error("writeMonitoringBalanceProblem", e);
+                }
+            }
+        }
+        logger.info("writeMonitoringBalanceProblem: problemFile={}", outputProblemFile);
+    }
+
+    public static MonitoringBalance readMonitoringBalanceProblem(File inputProblemFile) {
+        ObjectInputStream ois = null;
+        MonitoringBalance monitoringBalance = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(inputProblemFile));
+            monitoringBalance = (MonitoringBalance) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            logger.error("writeMonitoringBalanceProblem", e);
+        } catch (IOException e) {
+            logger.error("writeMonitoringBalanceProblem", e);
+        }
+        return monitoringBalance;
     }
 
 }

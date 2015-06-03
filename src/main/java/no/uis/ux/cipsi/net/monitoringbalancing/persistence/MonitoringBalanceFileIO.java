@@ -42,7 +42,19 @@ public class MonitoringBalanceFileIO implements SolutionFileIO {
     @Override
     public Solution read(File inputSolutionFile) {
         Configs configs = TxtFileUtil.getConfigurations(inputSolutionFile);
-        return new MonitoringBalancingGenerator().createMonitoringBalance(configs, false);
+        File problemObjectFile = getMonitoringBalanceObjectFile(inputSolutionFile);
+        if (problemObjectFile.exists()){
+            return MonitoringBalancingGenerator.readMonitoringBalanceProblem(problemObjectFile);
+        } else {
+            MonitoringBalance problem = new MonitoringBalancingGenerator().createMonitoringBalance(configs, false);
+            MonitoringBalancingGenerator.writeMonitoringBalanceProblem(problem, problemObjectFile);
+            return problem;
+        }
+    }
+
+    private File getMonitoringBalanceObjectFile(File inputSolutionFile) {
+        File objectFile = new File(inputSolutionFile.getAbsolutePath()+"-problem.obj");
+        return objectFile;
     }
 
     @Override
