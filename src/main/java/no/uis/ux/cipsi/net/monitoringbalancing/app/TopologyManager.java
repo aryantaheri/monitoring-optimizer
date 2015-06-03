@@ -342,7 +342,7 @@ public class TopologyManager {
     public static Switch getClosestMonitoringSwitch(Graph<Node, WeightedLink> topology, TrafficFlow flow){
         List<Switch> onPathSwitches = flow.getOnPathMonitoringSwitches();
         Switch candidateSw = null;
-        if (onPathSwitches != null && onPathSwitches.size() > 1) {
+        if (onPathSwitches != null && onPathSwitches.size() > 0) {
             candidateSw = onPathSwitches.get(0);
         }
         return candidateSw;
