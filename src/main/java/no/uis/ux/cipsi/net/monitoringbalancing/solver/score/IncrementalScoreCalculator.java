@@ -24,6 +24,9 @@ import edu.uci.ics.jung.graph.Graph;
 public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculator<MonitoringBalance> {
 
     private static Logger log = LoggerFactory.getLogger(IncrementalScoreCalculator.class);
+    private static final int NULL_MON_SW_SCORE = -10000;
+    private static final int NULL_MON_HOST_SCORE = -20000;
+
     private Map<WeightedLink, Double> linkUsageMap;
     private Map<Switch, Double> switchFabricUsageMap;
     private Map<Switch, Double> switchForwardingUsageMap;
@@ -112,6 +115,12 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
 
         if (monHost == null || monSwitch == null) {
             // TODO: is this right? or they need individual cases
+            if (monHost == null){
+                hardScore += NULL_MON_HOST_SCORE;
+            }
+            if (monSwitch == null){
+                hardScore += NULL_MON_SW_SCORE;
+            }
             return;
         }
 
@@ -125,6 +134,12 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
 
         if (monHost == null || monSwitch == null) {
             // TODO: is this right? or they need individual cases
+            if (monHost == null){
+                hardScore += NULL_MON_HOST_SCORE;
+            }
+            if (monSwitch == null){
+                hardScore += NULL_MON_SW_SCORE;
+            }
             return;
         }
 
