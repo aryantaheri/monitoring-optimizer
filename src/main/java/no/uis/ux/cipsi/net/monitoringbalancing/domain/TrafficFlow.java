@@ -111,7 +111,7 @@ public class TrafficFlow implements Serializable{
         this.rate = rate;
     }
 
-    @PlanningVariable(valueRangeProviderRefs = {"trafficFlowOnPathSwitchRange"},
+    @PlanningVariable(valueRangeProviderRefs = {"trafficFlowOnPathSwitchRange"}, nullable = false,
             strengthComparatorClass = MonitoringSwitchStrengthComparator.class)
     public Switch getMonitoringSwitch() {
         return monitoringSwitch;
@@ -125,7 +125,7 @@ public class TrafficFlow implements Serializable{
         return onPathMonitoringSwitches;
     }
 
-    @PlanningVariable(valueRangeProviderRefs = {"monitoringHostRange"},
+    @PlanningVariable(valueRangeProviderRefs = {"monitoringHostRange"}, nullable = false,
             strengthComparatorClass = MonitoringHostStrengthComparator.class)
     public MonitoringHost getMonitoringHost() {
         return monitoringHost;
