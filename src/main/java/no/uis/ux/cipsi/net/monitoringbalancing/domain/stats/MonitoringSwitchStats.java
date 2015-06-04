@@ -59,7 +59,6 @@ public class MonitoringSwitchStats {
         initCostStats = new DescriptiveStatistics();
         perFlowReuseCostRatioStats = new DescriptiveStatistics();
         swReuseStats = new DescriptiveStatistics();
-        nullSwitches = monitoringSwitchUsage.get(null);
         for (Switch sw : monitoringSwitchUsage.keySet()) {
             initCostStats.addValue(sw.getInitCost());
             perFlowReuseCostRatioStats.addValue(sw.getPerFlowReuseCostRatio());
