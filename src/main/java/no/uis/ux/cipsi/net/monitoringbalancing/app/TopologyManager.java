@@ -213,9 +213,16 @@ public class TopologyManager {
 
                         // Create links for monitoringHost with 0% utilization
                         links++;
-                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost, 0), edgeSw, host);
+                        WeightedLink l1 = new WeightedLink("link"+links, podSensitivity, switchInitCost, 0);
+                        l1.setSpeed(l1.getSpeed() * 4);
+                        topology.addEdge(l1, edgeSw, host);
+
                         links++;
-                        topology.addEdge(new WeightedLink("link"+links, podSensitivity, switchInitCost, 0), host, edgeSw);
+                        WeightedLink l2 = new WeightedLink("link"+links, podSensitivity, switchInitCost, 0);
+                        l2.setSpeed(l2.getSpeed() * 4);
+                        topology.addEdge(l2, host, edgeSw);
+
+                        log.info("Creating MH with 4 bonded interfaces, MH={}", host);
 
                         monitoringHostCreated = true;
 

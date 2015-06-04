@@ -47,6 +47,10 @@ public class WeightedLink implements Serializable{
         return speed;
     }
 
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
     public double getPodSensitivity() {
         return podSensitivity;
     }
