@@ -129,6 +129,10 @@ public class TrafficFlow implements Serializable{
         return onPathMonitoringSwitches;
     }
 
+    public void setOnPathMonitoringSwitches(List<Switch> onPathMonitoringSwitches) {
+        this.onPathMonitoringSwitches = onPathMonitoringSwitches;
+    }
+
     @PlanningVariable(valueRangeProviderRefs = {"monitoringHostRange"}, nullable = false,
             strengthComparatorClass = MonitoringHostStrengthComparator.class)
     public MonitoringHost getMonitoringHost() {
