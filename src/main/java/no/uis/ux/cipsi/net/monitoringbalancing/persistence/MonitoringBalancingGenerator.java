@@ -153,14 +153,16 @@ public class MonitoringBalancingGenerator {
         // Store paths and lookup them.
         //        int shortestPathsNum = 1;
         int shortestPathsNum = getShortestPathsLimit(srcHost, dstHost);
-        List<WeightedLink> path = TopologyManager.getRandomShortestPath(topology, configs, srcHost, dstHost, shortestPathsNum);
         //        List<WeightedLink> path = TopologyManager.getShortestPath(algo, srcHost, dstHost);
         List<Switch> onPathMonitoringSwitches = TopologyManager.getSwitchesOnPath(topology, path);
         TrafficFlow flow = new TrafficFlow(srcHost, dstHost,
                 getHostAddress(srcHost),
                 getHostAddress(dstHost),
                 (short) 80, (short) 80,
-                (short) 22, rate, path, onPathMonitoringSwitches);
+                (short) 22, rate, null, onPathMonitoringSwitches);
+
+        List<WeightedLink> path = TopologyManager.getDeterministicShortestPath(topology, configs, srcHost, dstHost, 4, flow);
+        flow.setPath(path);
         flow.setMonitoringHost(TopologyManager.getClosestMonitoringHost(topology, flow));
         flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
         return flow;
