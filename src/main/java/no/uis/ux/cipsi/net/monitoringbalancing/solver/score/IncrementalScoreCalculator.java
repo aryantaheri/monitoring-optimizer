@@ -121,9 +121,16 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
             if (monSwitch == null){
                 hardScore -= NULL_MON_SW_SCORE;
             }
+            //            System.out.println(monHost);
+            //            System.out.println(monSwitch);
+            //            System.exit(-1);
             return;
         }
 
+        //        if (!trafficFlow.getOnPathMonitoringSwitches().contains(monSwitch)){
+        //            System.out.println("WTF");
+        //            System.exit(-2);
+        //        }
         calculateTrafficFlowResourceUsage(trafficFlow, true);
         calculateMonitoringResourceUsage(topology, configs, trafficFlow, true);
     }
@@ -169,7 +176,8 @@ public class IncrementalScoreCalculator extends AbstractIncrementalScoreCalculat
             double oldAvailableBandwidth = weightedLink.getSpeed() - weightedLink.getUsage() - oldUsage;
             double newAvailableBandwidth = weightedLink.getSpeed() - weightedLink.getUsage() - newUsage;
 
-            hardScore += Math.min(newAvailableBandwidth, 0) - Math.min(oldAvailableBandwidth, 0);
+            // Calculate the hard score for links in Mbps
+            hardScore += (Math.min(newAvailableBandwidth, 0) - Math.min(oldAvailableBandwidth, 0)) / Math.pow(10, 6);
             linkUsageMap.put(weightedLink, newUsage);
         }
 
