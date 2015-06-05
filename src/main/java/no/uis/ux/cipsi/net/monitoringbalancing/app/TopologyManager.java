@@ -390,10 +390,15 @@ public class TopologyManager {
         for (MonitoringHost mh : monitoringHosts) {
 
             int monitoringHostPodId = NumericPathFinder.getPodId(k, NumericPathFinder.getIntValue(mh.getId()));
-            if (monitoringHostPodId == srcPodId || monitoringHostPodId == dstPodId) {
-                // This can take the first MH in the same pod as flow src/dst and oversubscribe it
+            //            if (monitoringHostPodId == srcPodId || monitoringHostPodId == dstPodId) {
+            //                // This can take the first MH in the same pod as flow src/dst and oversubscribe it
+            //                return mh;
+            //            }
+            if (monitoringHostPodId == srcPodId) {
+                // This can take the first MH in the same pod as flow src and oversubscribe it
                 return mh;
             }
+
         }
 
         if (monitoringHostCandidate == null){
