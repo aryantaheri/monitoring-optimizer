@@ -113,6 +113,7 @@ public class MonitoringBalancingGenerator {
         logger.debug("flows[#={}]", trafficFlows.size());
         for (TrafficFlow trafficFlow : trafficFlows) {
             logger.trace("flow {}", trafficFlow);
+            initTrafficFlowMonitoringVariables(topology, configs, trafficFlow, monitoringHosts);
         }
         List<Host> hosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
         logger.debug("Hosts[#={}]", hosts.size());
@@ -164,7 +165,13 @@ public class MonitoringBalancingGenerator {
         List<Switch> onPathMonitoringSwitches = TopologyManager.getSwitchesOnPath(topology, path);
         flow.setPath(path);
         flow.setOnPathMonitoringSwitches(onPathMonitoringSwitches);
-        flow.setMonitoringHost(TopologyManager.getClosestMonitoringHost(topology, flow));
+        //        flow.setMonitoringHost(TopologyManager.getPackedClosestMonitoringHost(topology, configs, flow));
+        //        flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
+        return flow;
+    }
+
+    private TrafficFlow initTrafficFlowMonitoringVariables(Graph<Node,WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts) {
+        flow.setMonitoringHost(TopologyManager.getPackedClosestMonitoringHost(topology, configs, flow, monitoringHosts));
         flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
         return flow;
     }

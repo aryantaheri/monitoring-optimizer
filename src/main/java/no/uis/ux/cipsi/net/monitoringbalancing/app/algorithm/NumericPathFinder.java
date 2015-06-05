@@ -803,7 +803,7 @@ public class NumericPathFinder {
         return null;
     }
 
-    private static int getIntValue(String id) {
+    public static int getIntValue(String id) {
         return Integer.parseInt(id.replaceAll("[^0-9]+", ""));
     }
 
@@ -816,7 +816,7 @@ public class NumericPathFinder {
         return podId;
     }
 
-    private static int getPodId(int k, int hostId) {
+    public static int getPodId(int k, int hostId) {
         int podId = (hostId - 1) / (k*k/4);
         return podId;
     }

@@ -369,4 +369,41 @@ public class TopologyManager {
         }
         return monitoringHost;
     }
+
+    public static MonitoringHost getPackedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow){
+        List<MonitoringHost> monitoringHosts = null;
+        monitoringHosts = getMonitoringHosts(topology);
+        return getPackedClosestMonitoringHost(topology, configs, flow, monitoringHosts);
+    }
+
+    public static MonitoringHost getPackedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts){
+        MonitoringHost monitoringHostCandidate = null;
+        Switch candidateSw = getClosestMonitoringSwitch(topology, flow);
+        int k = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
+
+        int srcId = NumericPathFinder.getIntValue(flow.getSrcNode().getId());
+        int dstId = NumericPathFinder.getIntValue(flow.getDstNode().getId());
+
+        int srcPodId = NumericPathFinder.getPodId(k, srcId);
+        int dstPodId = NumericPathFinder.getPodId(k, dstId);
+
+        for (MonitoringHost mh : monitoringHosts) {
+
+            int monitoringHostPodId = NumericPathFinder.getPodId(k, NumericPathFinder.getIntValue(mh.getId()));
+            if (monitoringHostPodId == srcPodId || monitoringHostPodId == dstPodId) {
+                // This can take the first MH in the same pod as flow src/dst and oversubscribe it
+                return mh;
+            }
+        }
+
+        if (monitoringHostCandidate == null){
+            Random rnd = new Random();
+            int index = rnd.nextInt(monitoringHosts.size());
+            monitoringHostCandidate = monitoringHosts.get(index);
+            log.error("MonitoringHostCandidate is null. Choosing a random one={}", monitoringHostCandidate);
+
+
+        }
+        return monitoringHostCandidate;
+    }
 }
