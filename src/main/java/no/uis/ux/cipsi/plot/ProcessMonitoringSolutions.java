@@ -60,7 +60,7 @@ public class ProcessMonitoringSolutions {
     public static void main(String[] args) {
         //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-07_150528/";
         //        String dir = "/run/user/1000/gvfs/sftp:host=badne8.ux.uis.no/import/br1raid6a1h2/stud/aryan/workspace/monitoring/monitoring-optimizer/local/data/monitoringbalancing/2015-04-09_172929-120min-good-k8/";
-        String dir = "/home/aryan/University/DC/Monitoring/data/2015-06-03_121514";
+        String dir = "/home/aryan/University/DC/Monitoring/data/2015-06-06_195624-60min-k48-packed-mhsw-srcdst-withmovefactory-BAD";
         loadSolutions(dir);
         prepareDataSets();
         plotDataSets(dir);
@@ -80,7 +80,12 @@ public class ProcessMonitoringSolutions {
             for (File localSearchDir : localSearchDirs) {
                 System.out.println("    "+localSearchDir.getName());
                 File[] solutions = localSearchDir.listFiles(solutionObjFile);
-                if (solutions.length > 1) System.err.println("More than one solution file found.");
+                if (solutions.length > 1) {
+                    System.err.println("More than one solution file found.");
+                } if (solutions.length == 0) {
+                    System.err.println("No solution file found.");
+                    continue;
+                }
                 MonitoringStats stats = MonitoringBalanceFileIO.readStats(solutions[0]);
 
                 // FIXME: remove this
