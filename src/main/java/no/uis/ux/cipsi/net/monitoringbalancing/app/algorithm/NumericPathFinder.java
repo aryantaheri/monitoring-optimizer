@@ -739,13 +739,14 @@ public class NumericPathFinder {
     }
 
     private static List<WeightedLink> getLinks(Graph<Node,WeightedLink> topo, Node src, Node dst) {
-        List<WeightedLink> links = new ArrayList<WeightedLink>();
-        for (WeightedLink link : topo.getInEdges(dst)) {
-            if (topo.getSource(link).equals(src)){
-                links.add(link);
-            }
-        }
-        return links;
+        //        List<WeightedLink> links = new ArrayList<WeightedLink>();
+        //        for (WeightedLink link : topo.getInEdges(dst)) {
+        //            if (topo.getSource(link).equals(src)){
+        //                links.add(link);
+        //            }
+        //        }
+        //        return links;
+        return new ArrayList<WeightedLink>(topo.findEdgeSet(src, dst));
     }
 
     private static Map<Integer, Map<String, Node>> nodeIdCache = new HashMap<Integer, Map<String, Node>>();
