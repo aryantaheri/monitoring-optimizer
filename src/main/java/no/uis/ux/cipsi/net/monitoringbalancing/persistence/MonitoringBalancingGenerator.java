@@ -171,6 +171,7 @@ public class MonitoringBalancingGenerator {
     }
 
     private TrafficFlow initTrafficFlowMonitoringVariables(Graph<Node,WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts) {
+        //        flow.setMonitoringHost(TopologyManager.getOversubscribedClosestMonitoringHost(topology, configs, flow, monitoringHosts));
         flow.setMonitoringHost(TopologyManager.getPackedClosestMonitoringHost(topology, configs, flow, monitoringHosts));
         flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
         return flow;

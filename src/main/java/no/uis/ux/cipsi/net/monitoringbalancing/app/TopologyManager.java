@@ -2,7 +2,9 @@ package no.uis.ux.cipsi.net.monitoringbalancing.app;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
@@ -370,13 +372,13 @@ public class TopologyManager {
         return monitoringHost;
     }
 
-    public static MonitoringHost getPackedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow){
+    public static MonitoringHost getOversubscribedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow){
         List<MonitoringHost> monitoringHosts = null;
         monitoringHosts = getMonitoringHosts(topology);
-        return getPackedClosestMonitoringHost(topology, configs, flow, monitoringHosts);
+        return getOversubscribedClosestMonitoringHost(topology, configs, flow, monitoringHosts);
     }
 
-    public static MonitoringHost getPackedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts){
+    public static MonitoringHost getOversubscribedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts){
         MonitoringHost monitoringHostCandidate = null;
         Switch candidateSw = getClosestMonitoringSwitch(topology, flow);
         int k = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
@@ -402,13 +404,71 @@ public class TopologyManager {
         }
 
         if (monitoringHostCandidate == null){
-            Random rnd = new Random();
-            int index = rnd.nextInt(monitoringHosts.size());
-            monitoringHostCandidate = monitoringHosts.get(index);
+            monitoringHostCandidate = getRandomMonitoringHost(monitoringHosts);
             log.error("MonitoringHostCandidate is null. Choosing a random one={}", monitoringHostCandidate);
-
-
         }
         return monitoringHostCandidate;
     }
+
+    private static Map<MonitoringHost, Double> monitoringHostUsageMap = new HashMap<MonitoringHost, Double>();
+
+    public static MonitoringHost getPackedClosestMonitoringHost(Graph<Node, WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts){
+        MonitoringHost monitoringHostCandidate = null;
+        Switch candidateSw = getClosestMonitoringSwitch(topology, flow);
+        int k = Integer.parseInt(configs.getConfig(ConfigName.TOPOLOGY_KPORT));
+
+        int srcId = NumericPathFinder.getIntValue(flow.getSrcNode().getId());
+        int dstId = NumericPathFinder.getIntValue(flow.getDstNode().getId());
+
+        int srcPodId = NumericPathFinder.getPodId(k, srcId);
+        int dstPodId = NumericPathFinder.getPodId(k, dstId);
+
+        for (MonitoringHost mh : monitoringHosts) {
+
+            int monitoringHostPodId = NumericPathFinder.getPodId(k, NumericPathFinder.getIntValue(mh.getId()));
+            //            if (monitoringHostPodId == srcPodId || monitoringHostPodId == dstPodId) {
+            //                // This can take the first MH in the same pod as flow src/dst and pack it
+            //                return mh;
+            //            }
+            if (monitoringHostPodId == srcPodId || monitoringHostPodId == dstPodId) {
+                Double usage = monitoringHostUsageMap.get(mh);
+                if (usage == null){
+                    usage = new Double(0);
+                }
+                Double newUsage = usage + flow.getRate();
+                double monitoringHostLinkCapacity = getIngressLinkCapacity(topology, mh);
+                if (newUsage < monitoringHostLinkCapacity){
+                    // This can take the first MH in the same pod as flow src.dst and pack it
+                    monitoringHostUsageMap.put(mh, newUsage);
+                    return mh;
+                }
+            }
+
+        }
+
+        if (monitoringHostCandidate == null){
+            monitoringHostCandidate = getRandomMonitoringHost(monitoringHosts);
+            log.error("MonitoringHostCandidate is null. Choosing a random one={}", monitoringHostCandidate);
+        }
+        return monitoringHostCandidate;
+    }
+
+    private static double getIngressLinkCapacity(Graph<Node, WeightedLink> topology, MonitoringHost mh){
+        Collection<WeightedLink> inLinks = topology.getInEdges(mh);
+        double capacity = 0;
+        for (WeightedLink weightedLink : inLinks) {
+            capacity += weightedLink.getSpeed();
+        }
+        return capacity;
+    }
+
+    public static MonitoringHost getRandomMonitoringHost(List<MonitoringHost> monitoringHosts) {
+        if (monitoringHosts == null || monitoringHosts.size() == 0) return null;
+
+        Random rnd = new Random();
+        int index = rnd.nextInt(monitoringHosts.size());
+        MonitoringHost monitoringHostCandidate = monitoringHosts.get(index);
+        return monitoringHostCandidate;
+    }
+
 }
