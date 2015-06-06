@@ -36,14 +36,6 @@ public class MonitoringChangeMoveFactory implements MoveListFactory<MonitoringBa
         }
 
         return moveList;
-
-        //        List<CloudComputer> cloudComputerList = cloudBalance.getComputerList();
-        //        for (CloudProcess cloudProcess : cloudBalance.getProcessList()) {
-        //            for (CloudComputer cloudComputer : cloudComputerList) {
-        //                moveList.add(new CloudComputerChangeMove(cloudProcess, cloudComputer));
-        //            }
-        //        }
-        //        return moveList;
     }
 
 }
