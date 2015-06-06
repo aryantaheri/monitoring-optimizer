@@ -858,14 +858,15 @@ public class NumericPathFinder {
     private static List<Integer> getCommonCoreIds(int k, int srcAggr, int dstAggr) {
         List<Integer> srcCores = getCoreIds(k, srcAggr);
         List<Integer> dstCores = getCoreIds(k, dstAggr);
-        List<Integer> commonCores = new ArrayList<Integer>();
-        for (Integer srcCore : srcCores) {
-            for (Integer dstCore : dstCores) {
-                if (srcCore.equals(dstCore)){
-                    commonCores.add(srcCore);
-                }
-            }
-        }
+        List<Integer> commonCores = new ArrayList<Integer>(srcCores);
+        commonCores.retainAll(dstCores);
+        //        for (Integer srcCore : srcCores) {
+        //            for (Integer dstCore : dstCores) {
+        //                if (srcCore.equals(dstCore)){
+        //                    commonCores.add(srcCore);
+        //                }
+        //            }
+        //        }
         return commonCores;
     }
 
