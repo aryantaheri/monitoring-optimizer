@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import mulavito.algorithms.shortestpath.ksp.Yen;
 import no.uis.ux.cipsi.net.monitoringbalancing.app.TopologyManager;
+import no.uis.ux.cipsi.net.monitoringbalancing.app.algorithm.HeuristicHelper;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.Host;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringBalance;
 import no.uis.ux.cipsi.net.monitoringbalancing.domain.MonitoringHost;
@@ -113,7 +114,7 @@ public class MonitoringBalancingGenerator {
         logger.debug("flows[#={}]", trafficFlows.size());
         for (TrafficFlow trafficFlow : trafficFlows) {
             logger.trace("flow {}", trafficFlow);
-            initTrafficFlowMonitoringVariables(topology, configs, trafficFlow, monitoringHosts);
+            HeuristicHelper.initTrafficFlowMonitoringVariables(topology, configs, trafficFlow, monitoringHosts);
         }
         List<Host> hosts = TopologyManager.getHosts(topology, includeMonitoringHostAsTrafficEndpoint);
         logger.debug("Hosts[#={}]", hosts.size());
@@ -170,12 +171,6 @@ public class MonitoringBalancingGenerator {
         return flow;
     }
 
-    private TrafficFlow initTrafficFlowMonitoringVariables(Graph<Node,WeightedLink> topology, Configs configs, TrafficFlow flow, List<MonitoringHost> monitoringHosts) {
-        //        flow.setMonitoringHost(TopologyManager.getOversubscribedClosestMonitoringHost(topology, configs, flow, monitoringHosts));
-        flow.setMonitoringHost(TopologyManager.getPackedClosestMonitoringHost(topology, configs, flow, monitoringHosts));
-        flow.setMonitoringSwitch(TopologyManager.getClosestMonitoringSwitch(topology, flow));
-        return flow;
-    }
 
     private static Random random = new Random();
     private static boolean shouldGenerate(Host srcHost, Host dstHost, Configs configs) {
