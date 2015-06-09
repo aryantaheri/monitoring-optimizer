@@ -26,8 +26,8 @@ public class MonitoringChangeMoveFactory implements MoveListFactory<MonitoringBa
         Graph<Node, WeightedLink> topology = solution.getTopology();
         for (TrafficFlow trafficFlow : solution.getTrafficFlows()) {
             for (Switch monitoringSwitch : monitoringSwitches) {
-                for (MonitoringHost monitoringHost : monitoringHosts) {
-                    if (trafficFlow.getOnPathMonitoringSwitches().contains(monitoringSwitch)){
+                if (trafficFlow.getOnPathMonitoringSwitches().contains(monitoringSwitch)){
+                    for (MonitoringHost monitoringHost : monitoringHosts) {
                         // System.out.println("MonitoringChangeMoveFactory " + trafficFlow + " " + monitoringSwitch + " " + monitoringHost);
                         moveList.add(new MonitoringChangeMove(topology, trafficFlow, monitoringSwitch, monitoringHost));
                     }
